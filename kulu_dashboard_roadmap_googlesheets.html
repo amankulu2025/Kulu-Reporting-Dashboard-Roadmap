@@ -1,0 +1,881 @@
+a<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kulu — Reporting & Dashboard Roadmap</title>
+<style>
+:root{
+  --dark:#0A2360;
+  --med:#133E94;
+  --blue:#58AFEB;
+  --light:#D3EFFE;
+  --ink:#12203D;
+  --paper:#F7F9FC;
+  --card:#FFFFFF;
+  --line:#E1E8F5;
+  --muted:#5A6B8C;
+  --amber:#E8963C;
+  --green:#2FA778;
+  --red:#D65C5C;
+  --purple:#7C4FD6;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+.topbar{background:linear-gradient(120deg,var(--dark),var(--med) 70%);color:#fff;padding:26px 32px 22px;position:sticky;top:0;z-index:60;box-shadow:0 4px 18px rgba(10,35,96,.18);display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+.topbar .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700;opacity:.9;}
+.topbar h1{margin:2px 0 6px;font-size:26px;font-weight:800;letter-spacing:-0.01em;}
+.topbar .sub{font-size:13.5px;color:#DCE7FA;max-width:640px;line-height:1.5;}
+.sync-box{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 16px;flex:0 0 auto;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex:0 0 auto;}
+.sync-dot.syncing{background:var(--amber);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sync-text{font-size:11.5px;color:#DCE7FA;}
+.sync-refresh{border:none;background:transparent;color:#fff;cursor:pointer;font-size:13px;padding:0;opacity:.8;}
+.sync-refresh:hover{opacity:1;}
+
+.wrap{max-width:1400px;margin:0 auto;padding:28px 32px 80px;}
+.section-title{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--med);margin:0 0 4px;display:flex;align-items:center;gap:10px;}
+.section-sub{color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5;}
+
+.meeting-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px 24px;margin-bottom:26px;display:grid;grid-template-columns:220px 1fr;gap:26px;}
+.meeting-when{background:linear-gradient(160deg,var(--dark),var(--med));color:#fff;border-radius:12px;padding:18px 16px;display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.meeting-when .day{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--light);opacity:.85;}
+.meeting-when .time{font-size:20px;font-weight:800;line-height:1.3;}
+.meeting-body h3{margin:0 0 4px;font-size:15px;font-weight:800;color:var(--dark);}
+.meeting-body .purpose{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.agenda-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.agenda-list li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);line-height:1.5;}
+.agenda-list .num{flex:0 0 auto;width:20px;height:20px;border-radius:6px;background:var(--light);color:var(--med);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.prep-note{margin-top:14px;background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--muted);line-height:1.55;}
+.prep-note b{color:var(--med);}
+
+.hier-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px 24px;margin-bottom:22px;}
+.hier-legend{display:flex;gap:18px;align-items:center;margin-bottom:16px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;}
+.loc-dubai{background:var(--med);}
+.loc-guinea{background:var(--amber);}
+.legend-hint{font-size:11px;color:var(--muted);margin-left:auto;}
+.hier-tier{margin-bottom:6px;}
+.hier-tier-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;}
+.hier-row{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;}
+.hier-connector{display:flex;justify-content:center;color:var(--blue);font-size:16px;margin:2px 0;opacity:.7;}
+.hier-node{border-radius:12px;padding:10px 16px;min-width:120px;display:flex;flex-direction:column;gap:2px;}
+.hier-node.md-node{background:linear-gradient(160deg,var(--dark),var(--med));color:#fff;margin:0 auto;min-width:240px;text-align:center;padding:14px 20px;}
+.hier-node.md-node .name{font-size:15px;font-weight:800;outline:none;}
+.hier-node.md-node .title{font-size:11px;color:var(--light);opacity:.9;margin-top:2px;outline:none;}
+.hier-node.cxo-node{background:var(--light);border:1px solid #BFE0FA;flex:1 1 150px;text-align:center;}
+.hier-node.cxo-node .name{font-size:13.5px;font-weight:800;color:var(--dark);outline:none;}
+.hier-node.cxo-node .title{font-size:10.5px;color:var(--med);opacity:.9;margin-top:2px;outline:none;}
+.hier-node [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--blue);border-radius:6px;}
+.loc-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;cursor:pointer;vertical-align:middle;}
+.loc-dot.on-dark{box-shadow:0 0 0 2px rgba(255,255,255,.5);}
+.dept-row{display:flex;gap:8px;flex-wrap:wrap;}
+.dept-chip{background:var(--paper);border:1px solid var(--line);color:var(--med);padding:7px 8px 7px 12px;border-radius:999px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.dept-chip span[contenteditable="true"]{outline:none;}
+.dept-chip .chip-del{border:none;background:rgba(19,62,148,.1);color:var(--med);width:16px;height:16px;border-radius:50%;font-size:10px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;}
+.dept-add{border:1px dashed var(--line);background:transparent;color:var(--muted);padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;}
+.dept-add:hover{border-color:var(--blue);color:var(--med);}
+.hier-hint{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5;}
+
+.platform-note{background:linear-gradient(160deg,#fff,var(--paper));border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;gap:14px;align-items:flex-start;}
+.platform-note-icon{font-size:22px;flex:0 0 auto;}
+.platform-note-title{font-size:13.5px;font-weight:800;color:var(--dark);outline:none;}
+.platform-note-body{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.55;outline:none;}
+.platform-note [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--blue);border-radius:6px;}
+
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.btn{border:1px solid var(--line);background:#fff;color:var(--med);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s ease;}
+.btn:hover{border-color:var(--blue);box-shadow:0 4px 10px rgba(19,62,148,.1);}
+.btn.primary{background:var(--med);color:#fff;border-color:var(--med);}
+.btn.primary:hover{background:var(--dark);}
+.btn.ghost{color:var(--muted);}
+
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;margin-bottom:34px;}
+table{width:100%;border-collapse:collapse;min-width:1420px;font-size:12.5px;}
+thead th{background:var(--med);color:#fff;font-weight:700;text-align:left;padding:10px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;white-space:nowrap;}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top;}
+tbody tr.main-row:nth-child(even){background:var(--paper);}
+tbody tr.main-row:hover{background:var(--light);cursor:pointer;}
+tbody tr.main-row.drag-over{outline:2px dashed var(--blue);outline-offset:-2px;background:var(--light);}
+td[contenteditable="true"]{outline:none;min-width:110px;cursor:text;}
+td[contenteditable="true"]:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--blue);border-radius:6px;}
+.col-name{min-width:190px;}
+.col-name .name-text{font-weight:700;color:var(--dark);}
+
+select.cell-select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:12px;font-weight:600;color:var(--ink);background:#fff;width:100%;cursor:pointer;}
+select.cell-select:focus{outline:2px solid var(--blue);}
+
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+.pri-high{background:#FCE9E9;color:var(--red);}
+.pri-medium{background:#FFF3E2;color:var(--amber);}
+.pri-low{background:#E9F7F0;color:var(--green);}
+.plat-tableau{background:#F3E9FC;color:var(--purple);}
+.plat-metabase{background:#E9F0FC;color:var(--med);}
+.plat-excel{background:#E9F7F0;color:var(--green);}
+.plat-other{background:var(--paper);color:var(--muted);}
+.trig-automatic{background:#E9F7F0;color:var(--green);}
+.trig-manual{background:#FFF3E2;color:var(--amber);}
+.trig-ondemand{background:#E9F0FC;color:var(--med);}
+.acc-license{background:#F3E9FC;color:var(--purple);}
+.acc-email{background:#FFF3E2;color:var(--amber);}
+.acc-link{background:#E9F0FC;color:var(--med);}
+.status-tbs{background:var(--paper);color:var(--muted);border:1px solid var(--line);}
+.status-wip{background:#FFF3E2;color:var(--amber);}
+.status-deployed{background:#E9F7F0;color:var(--green);}
+.status-issue{background:#FCE9E9;color:var(--red);}
+.lvl-MD{background:var(--dark);color:#fff;}
+.lvl-CXO{background:var(--light);color:var(--med);}
+.lvl-Department{background:var(--paper);color:var(--muted);border:1px solid var(--line);}
+
+.row-actions{width:28px;text-align:center;}
+.del-btn{border:none;background:transparent;color:var(--red);font-size:14px;cursor:pointer;opacity:.5;transition:opacity .15s ease;}
+.del-btn:hover{opacity:1;}
+.view-btn{border:none;background:transparent;color:var(--med);font-size:14px;cursor:pointer;opacity:.55;}
+.view-btn:hover{opacity:1;}
+
+.stake-cell{position:relative;min-width:150px;}
+.stake-chips-wrap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:22px;}
+.stake-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+.stake-empty{font-size:11px;color:#A8B4CC;font-style:italic;}
+.stake-edit-btn{border:1px solid var(--line);background:#fff;color:var(--muted);width:20px;height:20px;border-radius:50%;font-size:10px;cursor:pointer;flex:0 0 auto;}
+.stake-edit-btn:hover{border-color:var(--blue);color:var(--med);}
+.stake-popover{position:absolute;top:calc(100% + 6px);left:0;z-index:80;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 28px rgba(10,35,96,.18);padding:12px 14px;width:230px;}
+.stake-popover .grp-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:8px 0 4px;}
+.stake-popover .grp-label:first-child{margin-top:0;}
+.stake-popover label{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink);padding:3px 0;cursor:pointer;}
+.stake-popover input[type=checkbox]{accent-color:var(--med);width:14px;height:14px;}
+.stake-popover .close-pop{margin-top:10px;width:100%;border:1px solid var(--med);background:var(--med);color:#fff;border-radius:8px;padding:6px;font-size:12px;font-weight:700;cursor:pointer;}
+
+.fields-badge{border:1px solid var(--line);background:var(--paper);color:var(--med);padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;}
+.fields-badge:hover{border-color:var(--blue);}
+
+.metrics-cell{min-width:150px;}
+.linked-metric-chip{background:#EAF3FF;color:var(--med);border:1px solid #CFE4FA;padding:2px 6px 2px 10px;border-radius:999px;font-size:10.5px;font-weight:700;display:inline-flex;align-items:center;gap:5px;margin:1px 3px 1px 0;}
+.linked-metric-chip button{border:none;background:rgba(19,62,148,.12);color:var(--med);width:14px;height:14px;border-radius:50%;font-size:9px;cursor:pointer;line-height:1;}
+
+.metrics-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:10px;}
+.metric-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px 12px;position:relative;cursor:grab;}
+.metric-card:active{cursor:grabbing;}
+.metric-card.dragging{opacity:.4;}
+.metric-card .m-name{font-size:13.5px;font-weight:800;color:var(--dark);outline:none;padding-right:16px;}
+.metric-card .m-def{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45;outline:none;}
+.metric-card .m-remove{position:absolute;top:8px;right:10px;border:none;background:transparent;color:var(--red);font-size:12px;cursor:pointer;opacity:.4;}
+.metric-card .m-remove:hover{opacity:1;}
+.metric-card [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--blue);border-radius:5px;}
+.metric-add-card{border:1.5px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;min-height:70px;background:transparent;}
+.metric-add-card:hover{border-color:var(--blue);color:var(--med);}
+.metrics-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 18px;}
+
+.notes-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:10px;}
+.notes-card textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:10px;padding:12px;font-family:inherit;font-size:12.5px;color:var(--ink);resize:vertical;background:var(--paper);}
+.notes-card textarea:focus{outline:2px solid var(--blue);background:#fff;}
+
+.footnote{color:var(--muted);font-size:11.5px;text-align:center;margin-top:26px;line-height:1.6;}
+.footnote b{color:var(--med);}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,45,.55);z-index:200;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;backdrop-filter:blur(2px);}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:20px;max-width:760px;width:100%;padding:30px 32px 32px;position:relative;box-shadow:0 30px 70px rgba(10,20,45,.35);animation:pop .2s ease;}
+@keyframes pop{from{opacity:0;transform:scale(.97) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-close{position:absolute;top:18px;right:20px;background:var(--paper);border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--dark);font-weight:700;}
+.m-eyebrow{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);}
+.m-title{font-size:21px;font-weight:800;color:var(--dark);margin:4px 0 16px;line-height:1.25;outline:none;padding-right:40px;}
+.m-title:focus{box-shadow:0 0 0 2px var(--blue);border-radius:6px;}
+.m-badges{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.m-badges select{border:none;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.m-field{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.m-field.full{grid-column:1/-1;}
+.m-field .k{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px;}
+.m-field input, .m-field select, .m-field textarea{width:100%;border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--ink);font-weight:600;outline:none;resize:vertical;}
+.m-field textarea{min-height:52px;font-weight:500;}
+.m-section{margin-bottom:18px;}
+.m-section h5{margin:0 0 3px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--med);}
+.m-section .hint{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4;}
+.m-stake-groups{display:flex;gap:22px;flex-wrap:wrap;}
+.m-stake-groups .grp-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px;}
+.m-stake-groups label{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink);padding:2px 0;cursor:pointer;}
+.m-stake-groups input[type=checkbox]{accent-color:var(--med);width:14px;height:14px;}
+.field-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.field-chip{background:var(--light);color:var(--med);padding:4px 6px 4px 12px;border-radius:999px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.field-chip button{border:none;background:rgba(19,62,148,.12);color:var(--med);width:15px;height:15px;border-radius:50%;font-size:9px;cursor:pointer;line-height:1;}
+.field-add-row{display:flex;gap:6px;}
+.field-add-row input{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;font-family:inherit;}
+.field-add-row button{border:1px solid var(--med);background:var(--med);color:#fff;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+.visual-optional-tag{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;background:var(--paper);border:1px solid var(--line);padding:1px 8px;border-radius:999px;margin-left:6px;}
+.visual-row{display:flex;gap:10px;margin-bottom:8px;align-items:center;}
+.visual-row input[type=text]{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;font-family:inherit;}
+.visual-upload-btn{border:1px dashed var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.visual-upload-btn:hover{border-color:var(--blue);color:var(--med);}
+.visual-note{width:100%;min-height:56px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12px;resize:vertical;}
+.visual-preview{margin-top:8px;display:flex;align-items:center;gap:10px;}
+.visual-preview img{max-width:180px;max-height:110px;border-radius:8px;border:1px solid var(--line);object-fit:cover;}
+.visual-preview button{border:none;background:transparent;color:var(--red);font-size:11.5px;cursor:pointer;font-weight:700;}
+
+@media(max-width:820px){
+  .meeting-card{grid-template-columns:1fr;}
+  .m-grid{grid-template-columns:1fr;}
+  .wrap{padding:20px 16px 60px;}
+  .topbar{padding:20px 18px 18px;}
+  .modal{padding:26px 20px 28px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="eyebrow">Kulu · Data & Reporting</div>
+    <h1>Reporting & Dashboard Roadmap</h1>
+    <div class="sub">Shared, live-editable inventory of every report/dashboard the team sends, receives, or uses.</div>
+  </div>
+  <div class="sync-box">
+    <div class="sync-dot" id="syncDot"></div>
+    <div class="sync-text" id="syncText">Synced just now</div>
+    <button class="sync-refresh" onclick="manualRefresh()" title="Refresh now">↻</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="section-title">Kickoff meeting</div>
+  <div class="meeting-card">
+    <div class="meeting-when">
+      <div class="day">Internal Kickoff</div>
+      <div class="time">Fri, 10 Jul 2026<br>3:30 PM – 4:30 PM<br><span style="font-weight:600;font-size:12px;">Dubai (GST)</span></div>
+    </div>
+    <div class="meeting-body">
+      <h3>Agenda</h3>
+      <div class="purpose">Goal: align internally before we bring the Data BI team into the room.</div>
+      <ul class="agenda-list">
+        <li><span class="num">1</span> Align on the key business metrics that matter for Kulu.</li>
+        <li><span class="num">2</span> Brief overview of the reports and dashboards each team currently sends, receives, or uses.</li>
+        <li><span class="num">3</span> Understand key reporting requirements and stakeholder expectations.</li>
+        <li><span class="num">4</span> Discuss the approach and next steps for engaging with the Data BI team.</li>
+      </ul>
+      <div class="prep-note"><b>How to use this page:</b> fill in the inventory table below — even rough entries are fine. Everyone with this link edits the same live workspace, so entries merge automatically as people fill in their part.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Stakeholder layers</div>
+  <div class="section-sub">Who dashboards ultimately serve, top to bottom. Click any name/designation to edit; click the colored dot to switch location.</div>
+  <div class="hier-card">
+    <div class="hier-legend">
+      <div class="legend-item"><span class="legend-dot loc-dubai"></span> Dubai</div>
+      <div class="legend-item"><span class="legend-dot loc-guinea"></span> Guinea</div>
+      <div class="legend-hint">Click any colored dot to toggle a person's or team's location.</div>
+    </div>
+    <div class="hier-tier">
+      <div class="hier-tier-label">Tier 1 — MD</div>
+      <div class="hier-node md-node">
+        <span class="name">
+          <span class="loc-dot on-dark" id="mdLocDot" onclick="toggleMdLocation()" title="Click to switch location"></span>
+          <span contenteditable="true" id="mdName" oninput="onHierEdit()">Mr. Roshan</span>
+        </span>
+        <span class="title" contenteditable="true" id="mdTitle" oninput="onHierEdit()">Managing Director</span>
+      </div>
+    </div>
+    <div class="hier-connector">▾</div>
+    <div class="hier-tier">
+      <div class="hier-tier-label">Tier 2 — CXO</div>
+      <div class="hier-row" id="cxoRow"></div>
+    </div>
+    <div class="hier-connector">▾</div>
+    <div class="hier-tier">
+      <div class="hier-tier-label">Tier 3 — Departments</div>
+      <div class="dept-row" id="deptRow"></div>
+    </div>
+    <div class="hier-hint">Designations default to "CXO" — click any of them to set the real title (COO, CFO, etc). This is a starter map; adjust names, titles, or locations before the call if needed.</div>
+  </div>
+
+  <div class="platform-note">
+    <div class="platform-note-icon">📊</div>
+    <div>
+      <div class="platform-note-title" contenteditable="true" id="platformNoteTitle" oninput="onPlatformNoteEdit()">Tableau is our primary reporting platform</div>
+      <div class="platform-note-body" contenteditable="true" id="platformNoteBody" oninput="onPlatformNoteEdit()">Full seats are costly to extend to everyone. Proposal: give direct Tableau access to a small group of key stakeholders, and distribute scheduled report exports by email to everyone else. Tracked per dashboard in the "Access" column below.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Dashboard & report inventory</div>
+  <div class="section-sub">Click a row to open its full detail card. Drag a card from the metrics board below and drop it on a row to link that metric to that report.</div>
+
+  <div class="toolbar">
+    <button class="btn primary" onclick="addRow()">+ Add dashboard</button>
+    <button class="btn ghost" onclick="exportCSV()">Export CSV</button>
+    <button class="btn ghost" onclick="clearAll()">Clear all</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:26px;"></th>
+          <th style="width:26px;"></th>
+          <th>Dashboard / Report</th>
+          <th>Platform</th>
+          <th>Access</th>
+          <th>Stakeholders</th>
+          <th>Trigger</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Fields</th>
+          <th>Linked Metrics</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Metrics board</div>
+  <div class="section-sub metrics-hint">Drag any card onto a dashboard row above to link it to that report.</div>
+  <div class="metrics-board" id="metricsBoard"></div>
+
+  <div class="section-title">Notes for Data BI engagement</div>
+  <div class="section-sub">Anything to flag before we bring the Data BI team in — gaps, conflicting versions of truth, urgent asks.</div>
+  <div class="notes-card">
+    <textarea id="notesDataBi" placeholder="e.g. Finance and Ops report GTV differently, no single source of truth for agent activation..."></textarea>
+  </div>
+
+  <div class="footnote">
+    <b>How sharing works today:</b> everyone who opens this same artifact link edits one shared workspace — changes appear for others within ~8 seconds. This stops working if the raw .html file is emailed or hosted outside Claude.
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script>
+// ============================================================
+// PASTE your Google Apps Script Web App URL here (see setup guide).
+// It looks like: https://script.google.com/macros/s/AKfycb.../exec
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/kulu.com/s/AKfycbyaBbm5JoTfzj0n08xPFrmGTEgrgJQTgllpV4Q9fPcV_xwIUDKBZyaU8zlXgOWplQqoQA/exec';
+
+const ROWS_KEY = 'rows';
+const HIER_KEY = 'hier';
+const METRICS_KEY = 'metrics';
+const NOTES_KEY = 'notes';
+const PLATNOTE_KEY = 'platformNote';
+const POLL_MS = 8000;
+const MAX_IMG_DIM = 480;
+
+const PLATFORM_OPTS = ['Tableau','Metabase','Excel','Google Sheets','Other'];
+const TYPE_OPTS = ['Live Dashboard','PDF','Excel Export','Email Digest','Slide Deck','Other'];
+const TRIGGER_OPTS = [{v:'Automatic',label:'Automatic'},{v:'Manual',label:'Manual send'},{v:'OnDemand',label:'On-demand'}];
+const PRIORITY_OPTS = ['High','Medium','Low'];
+const ACCESS_OPTS = [{v:'Full Tableau License',label:'Full License'},{v:'Emailed Export',label:'Emailed Export'},{v:'Shared View-only Link',label:'View-only Link'}];
+const STATUS_OPTS = [{v:'To Be Started',label:'To Be Started'},{v:'WIP',label:'WIP'},{v:'Deployed',label:'Deployed'},{v:'Issue Fixation',label:'Issue Fixation'}];
+
+function platClass(p){ const m={Tableau:'plat-tableau',Metabase:'plat-metabase',Excel:'plat-excel','Google Sheets':'plat-excel'}; return m[p]||'plat-other'; }
+function priClass(p){ return p==='High'?'pri-high':p==='Low'?'pri-low':'pri-medium'; }
+function trigClass(t){ return t==='Automatic'?'trig-automatic':t==='OnDemand'?'trig-ondemand':'trig-manual'; }
+function accClass(a){ return a==='Full Tableau License'?'acc-license':a==='Shared View-only Link'?'acc-link':'acc-email'; }
+function statusClass(s){ const m={'To Be Started':'status-tbs','WIP':'status-wip','Deployed':'status-deployed','Issue Fixation':'status-issue'}; return m[s]||'status-tbs'; }
+function lvlClass(l){ return 'lvl-'+(l||'Department'); }
+function locClass(l){ return l==='Guinea'?'loc-guinea':'loc-dubai'; }
+function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s||''; return d.innerHTML; }
+function esc1(s){ return (s||'').replace(/'/g,"\\'"); }
+
+let rows = seedRows();
+let hier = {
+  mdName:'Mr. Roshan', mdTitle:'Managing Director', mdLocation:'Dubai',
+  cxos:[
+    {name:'Dinko', title:'COO', location:'Dubai'},
+    {name:'Gabriel', title:'CXO', location:'Dubai'},
+    {name:'Arnaud', title:'CXO', location:'Dubai'},
+    {name:'Sory', title:'CXO', location:'Guinea'},
+    {name:'Billo', title:'CXO', location:'Guinea'}
+  ],
+  departments:[
+    {name:'B2B', location:'Dubai'},{name:'Operations', location:'Guinea'},{name:'Marketing', location:'Dubai'},
+    {name:'Distribution', location:'Guinea'},{name:'Finance', location:'Dubai'},{name:'Product', location:'Dubai'},
+    {name:'Tech', location:'Dubai'},{name:'Integrations', location:'Dubai'}
+  ]
+};
+let metrics = seedMetrics();
+let platformNote = { title:'Tableau is our primary reporting platform', body:'Full seats are costly to extend to everyone. Proposal: give direct Tableau access to a small group of key stakeholders, and distribute scheduled report exports by email to everyone else. Tracked per dashboard in the "Access" column below.' };
+let openStakeIdx = null;
+let currentModalIdx = null;
+let isSyncing = false;
+
+function cxoNames(){ return hier.cxos.map(c=>c.name); }
+function deptNames(){ return hier.departments.map(d=>d.name); }
+function levelForName(name){
+  if(name===hier.mdName) return 'MD';
+  if(cxoNames().includes(name)) return 'CXO';
+  return 'Department';
+}
+function nextMetricId(){ return 'm_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+
+function seedRows(){
+  return [
+    {name:'Wallet Activation & Onboarding Funnel', source:'Growth & Product', platform:'Tableau', accessMethod:'Full Tableau License', type:'Live Dashboard', stakeholders:['Mr. Roshan','Dinko','Product'], trigger:'OnDemand', priority:'High', status:'Deployed', objective:'Track new users from sign-up through KYC completion to first transaction.', details:'Refreshed daily; core adoption funnel for Guinea launch markets.', owner:'', link:'', requiredFields:['Signup date','KYC status','Time to first transaction','Region'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'Transaction Volume & GTV Dashboard', source:'Finance & Analytics', platform:'Tableau', accessMethod:'Full Tableau License', type:'Live Dashboard', stakeholders:['Mr. Roshan','Dinko','Gabriel','Finance'], trigger:'Automatic', priority:'High', status:'Deployed', objective:'Daily and weekly GTV and transaction count across wallet, CICO, and bill pay.', details:'Auto-refreshed each morning before the leadership standup.', owner:'', link:'', requiredFields:['GTV','Transaction count','Transaction type','Date'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'Agent Network & CICO Liquidity Report', source:'Distribution', platform:'Tableau', accessMethod:'Emailed Export', type:'PDF', stakeholders:['Sory','Distribution'], trigger:'Manual', priority:'Medium', status:'WIP', objective:'Monitor agent float levels and cash-in/cash-out balance across regions.', details:'Weekly export emailed to regional leads who do not hold a Tableau seat.', owner:'', link:'', requiredFields:['Agent ID','Region','Float balance','CICO volume'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'KYC & Compliance Monitoring', source:'Compliance', platform:'Metabase', accessMethod:'Shared View-only Link', type:'Live Dashboard', stakeholders:['Gabriel','Finance'], trigger:'Automatic', priority:'High', status:'To Be Started', objective:'Flag incomplete KYC, expired IDs, and AML risk indicators.', details:'Auto-refreshed hourly.', owner:'', link:'', requiredFields:['User ID','KYC status','ID expiry date','Risk score'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'Fraud & Risk Alerts Dashboard', source:'Risk & Fraud', platform:'Tableau', accessMethod:'Full Tableau License', type:'Live Dashboard', stakeholders:['Arnaud','Tech'], trigger:'Automatic', priority:'High', status:'WIP', objective:'Surface suspicious transaction patterns and velocity checks near real time.', details:'Streaming refresh every 15 minutes.', owner:'', link:'', requiredFields:['Transaction ID','Flag reason','Risk score','Agent/User ID'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'Customer Support & Complaints Tracker', source:'Customer Support', platform:'Excel', accessMethod:'Emailed Export', type:'Excel Export', stakeholders:['Billo','Marketing'], trigger:'Manual', priority:'Medium', status:'Deployed', objective:'Track ticket volume, resolution time, and top complaint categories.', details:'Compiled weekly from the support tool export.', owner:'', link:'', requiredFields:['Ticket ID','Category','Resolution time','Channel'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
+    {name:'Monthly Finance Reconciliation', source:'Finance', platform:'Excel', accessMethod:'Emailed Export', type:'Excel Export', stakeholders:['Mr. Roshan','Finance'], trigger:'Manual', priority:'High', status:'Issue Fixation', objective:'Reconcile GTV, revenue, and float across wallet ledger and bank statements.', details:'Manually compiled month-end.', owner:'', link:'', requiredFields:['GTV','Net revenue','Float variance','Reconciliation date'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''}
+  ];
+}
+function seedMetrics(){
+  return [
+    {id:'m_seed_1', name:'Active Wallets', def:'Wallets with at least one transaction in the period.'},
+    {id:'m_seed_2', name:'GTV', def:'Gross transaction value across all rails.'},
+    {id:'m_seed_3', name:'Agent Network Health', def:'Active agents, float availability, CICO volume.'},
+    {id:'m_seed_4', name:'KYC Completion Rate', def:'% of sign-ups reaching full KYC.'},
+    {id:'m_seed_5', name:'Revenue per User', def:'Net revenue divided by active users.'}
+  ];
+}
+
+/* ---------- Hierarchy ---------- */
+function renderHier(){
+  document.getElementById('mdName').innerText = hier.mdName;
+  document.getElementById('mdTitle').innerText = hier.mdTitle;
+  document.getElementById('mdLocDot').className = 'loc-dot on-dark ' + locClass(hier.mdLocation);
+  document.getElementById('mdLocDot').title = hier.mdLocation + ' — click to switch';
+
+  document.getElementById('cxoRow').innerHTML = hier.cxos.map((c,i)=>`
+    <div class="hier-node cxo-node">
+      <span class="name">
+        <span class="loc-dot ${locClass(c.location)}" onclick="toggleCxoLocation(${i})" title="${c.location} — click to switch"></span>
+        <span contenteditable="true" oninput="onCxoNameEdit(${i},this)">${escapeHtml(c.name)}</span>
+      </span>
+      <span class="title" contenteditable="true" oninput="onCxoTitleEdit(${i},this)">${escapeHtml(c.title)}</span>
+    </div>`).join('') + `<button class="dept-add" style="align-self:center;" onclick="addCxo()">+ Add CXO</button>`;
+
+  document.getElementById('deptRow').innerHTML = hier.departments.map((d,i)=>`
+    <span class="dept-chip">
+      <span class="loc-dot ${locClass(d.location)}" onclick="toggleDeptLocation(${i})" title="${d.location} — click to switch"></span>
+      <span contenteditable="true" oninput="onDeptEdit(${i},this)">${escapeHtml(d.name)}</span>
+      <button class="chip-del" onclick="removeDept(${i})">✕</button>
+    </span>`).join('') + `<button class="dept-add" onclick="addDept()">+ Add department</button>`;
+}
+function onHierEdit(){ hier.mdName=document.getElementById('mdName').innerText; hier.mdTitle=document.getElementById('mdTitle').innerText; scheduleSave(HIER_KEY, ()=>hier); }
+function toggleMdLocation(){ hier.mdLocation = hier.mdLocation==='Dubai' ? 'Guinea' : 'Dubai'; renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
+function onCxoNameEdit(i,el){ hier.cxos[i].name=el.innerText; scheduleSave(HIER_KEY, ()=>hier); }
+function onCxoTitleEdit(i,el){ hier.cxos[i].title=el.innerText; scheduleSave(HIER_KEY, ()=>hier); }
+function toggleCxoLocation(i){ hier.cxos[i].location = hier.cxos[i].location==='Dubai'?'Guinea':'Dubai'; renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
+function onDeptEdit(i,el){ hier.departments[i].name=el.innerText; scheduleSave(HIER_KEY, ()=>hier); }
+function toggleDeptLocation(i){ hier.departments[i].location = hier.departments[i].location==='Dubai'?'Guinea':'Dubai'; renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
+function addCxo(){ hier.cxos.push({name:'New CXO', title:'CXO', location:'Dubai'}); renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
+function removeDept(i){ hier.departments.splice(i,1); renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
+function addDept(){ const d=prompt('Department name:'); if(d && d.trim()){ hier.departments.push({name:d.trim(), location:'Dubai'}); renderHier(); scheduleSave(HIER_KEY, ()=>hier); } }
+
+function onPlatformNoteEdit(){
+  platformNote.title = document.getElementById('platformNoteTitle').innerText;
+  platformNote.body = document.getElementById('platformNoteBody').innerText;
+  scheduleSave(PLATNOTE_KEY, ()=>platformNote);
+}
+
+/* ---------- Stakeholder popover ---------- */
+function stakeChipsHtml(stakeholders){
+  if(!stakeholders || !stakeholders.length) return '<span class="stake-empty">Add stakeholders</span>';
+  return stakeholders.map(n=>`<span class="stake-chip ${lvlClass(levelForName(n))}">${escapeHtml(n)}</span>`).join('');
+}
+function stakePopoverHtml(idx){
+  const cur = rows[idx].stakeholders || [];
+  const mdChecked = cur.includes(hier.mdName);
+  const cxoChecks = hier.cxos.map(c=>`<label><input type="checkbox" ${cur.includes(c.name)?'checked':''} onchange="toggleStakeholder(${idx},'${esc1(c.name)}',this.checked)">${escapeHtml(c.name)}</label>`).join('');
+  const deptChecks = hier.departments.map(d=>`<label><input type="checkbox" ${cur.includes(d.name)?'checked':''} onchange="toggleStakeholder(${idx},'${esc1(d.name)}',this.checked)">${escapeHtml(d.name)}</label>`).join('');
+  return `<div class="stake-popover" onclick="event.stopPropagation()">
+    <div class="grp-label">MD</div>
+    <label><input type="checkbox" ${mdChecked?'checked':''} onchange="toggleStakeholder(${idx},'${esc1(hier.mdName)}',this.checked)">${escapeHtml(hier.mdName)}</label>
+    <div class="grp-label">CXO</div>
+    ${cxoChecks}
+    <div class="grp-label">Department</div>
+    ${deptChecks}
+    <button class="close-pop" onclick="event.stopPropagation();closeStakePopover()">Done</button>
+  </div>`;
+}
+function toggleStakePopover(idx){ openStakeIdx = (openStakeIdx===idx) ? null : idx; renderTable(); }
+function closeStakePopover(){ openStakeIdx = null; renderTable(); }
+function toggleStakeholder(idx, name, checked){
+  if(!rows[idx].stakeholders) rows[idx].stakeholders = [];
+  const arr = rows[idx].stakeholders;
+  const pos = arr.indexOf(name);
+  if(checked && pos===-1) arr.push(name);
+  if(!checked && pos!==-1) arr.splice(pos,1);
+  scheduleSave(ROWS_KEY, ()=>rows);
+  const cellWrap = document.querySelector(`tr[data-idx="${idx}"] .stake-chips-wrap`);
+  if(cellWrap) cellWrap.innerHTML = stakeChipsHtml(arr) + `<button class="stake-edit-btn" onclick="event.stopPropagation();toggleStakePopover(${idx})">✎</button>`;
+}
+
+/* ---------- Table ---------- */
+function selectCell(idx, field, options, current, classFn){
+  const opts = options.map(o=>{
+    const val = typeof o==='object'?o.v:o;
+    const label = typeof o==='object'?o.label:o;
+    return `<option value="${escapeHtml(val)}" ${val===current?'selected':''}>${escapeHtml(label)}</option>`;
+  }).join('');
+  const badgeCls = classFn?classFn(current):'';
+  return `<td><select class="cell-select ${badgeCls}" onclick="event.stopPropagation()" onchange="event.stopPropagation();onSelectChange(${idx},'${field}',this)">${opts}</select></td>`;
+}
+function metricNameById(id){ const m=metrics.find(x=>x.id===id); return m?m.name:'(removed)'; }
+function linkedMetricsHtml(idx, linked){
+  if(!linked || !linked.length) return '<span class="stake-empty">Drop a metric here</span>';
+  return linked.map(id=>`<span class="linked-metric-chip">${escapeHtml(metricNameById(id))}<button onclick="event.stopPropagation();unlinkMetric(${idx},'${id}')">✕</button></span>`).join('');
+}
+
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = rows.map((r,i)=>`
+    <tr class="main-row" data-idx="${i}" onclick="rowClicked(event,${i})" ondragover="onRowDragOver(event)" ondragleave="onRowDragLeave(event)" ondrop="onRowDrop(event,${i})">
+      <td class="row-actions"><button class="view-btn" onclick="event.stopPropagation();openModal(${i})" title="View details">⤢</button></td>
+      <td class="row-actions"><button class="del-btn" onclick="event.stopPropagation();deleteRow(${i})" title="Remove row">✕</button></td>
+      <td class="col-name" contenteditable="true" data-placeholder="Dashboard name" onclick="event.stopPropagation()">
+        <div class="name-text">${escapeHtml(r.name)}</div>
+      </td>
+      ${selectCell(i,'platform',PLATFORM_OPTS,r.platform,platClass)}
+      ${selectCell(i,'accessMethod',ACCESS_OPTS,r.accessMethod,accClass)}
+      <td class="stake-cell">
+        <div class="stake-chips-wrap" onclick="event.stopPropagation();toggleStakePopover(${i})">
+          ${stakeChipsHtml(r.stakeholders)}
+          <button class="stake-edit-btn" onclick="event.stopPropagation();toggleStakePopover(${i})">✎</button>
+        </div>
+        ${openStakeIdx===i ? stakePopoverHtml(i) : ''}
+      </td>
+      ${selectCell(i,'trigger',TRIGGER_OPTS,r.trigger,trigClass)}
+      ${selectCell(i,'priority',PRIORITY_OPTS,r.priority,priClass)}
+      ${selectCell(i,'status',STATUS_OPTS,r.status,statusClass)}
+      <td><button class="fields-badge" onclick="event.stopPropagation();openModal(${i})">${(r.requiredFields||[]).length} field${(r.requiredFields||[]).length===1?'':'s'}</button></td>
+      <td class="metrics-cell">${linkedMetricsHtml(i, r.linkedMetrics)}</td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.col-name').forEach(td=>{
+    td.addEventListener('input', ()=>{
+      const tr = td.closest('tr'); const idx = parseInt(tr.dataset.idx);
+      rows[idx].name = td.querySelector('.name-text').innerText;
+      scheduleSave(ROWS_KEY, ()=>rows);
+    });
+  });
+}
+
+function rowClicked(e, idx){
+  const t = e.target;
+  if(t.closest('select') || t.closest('input') || t.closest('button') || t.closest('[contenteditable="true"]') || t.closest('.stake-popover')) return;
+  openModal(idx);
+}
+function onSelectChange(idx, field, el){ rows[idx][field] = el.value; renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+
+function addRow(){
+  rows.push({name:'New dashboard',source:'',platform:'Tableau',accessMethod:'Emailed Export',type:'Live Dashboard',stakeholders:[],trigger:'Manual',priority:'Medium',status:'To Be Started',objective:'',details:'',owner:'',link:'',requiredFields:[],linkedMetrics:[],visualLink:'',visualNote:'',visualImage:''});
+  renderTable(); scheduleSave(ROWS_KEY, ()=>rows);
+}
+function deleteRow(i){ rows.splice(i,1); renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+function clearAll(){ if(!confirm('Clear the entire table? This cannot be undone.')) return; rows=[]; renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+
+/* ---------- Drag & drop: metrics -> rows ---------- */
+function onMetricDragStart(e, id){ e.dataTransfer.setData('text/metric-id', id); e.target.closest('.metric-card').classList.add('dragging'); }
+function onMetricDragEnd(e){ e.target.closest('.metric-card').classList.remove('dragging'); }
+function onRowDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function onRowDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function onRowDrop(e, idx){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const id = e.dataTransfer.getData('text/metric-id');
+  if(!id) return;
+  if(!rows[idx].linkedMetrics) rows[idx].linkedMetrics = [];
+  if(!rows[idx].linkedMetrics.includes(id)) rows[idx].linkedMetrics.push(id);
+  renderTable();
+  scheduleSave(ROWS_KEY, ()=>rows);
+}
+function unlinkMetric(idx, id){ rows[idx].linkedMetrics = (rows[idx].linkedMetrics||[]).filter(x=>x!==id); renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+
+function exportCSV(){
+  const headers = ['Dashboard Name','Source','Platform','Access Method','Type','Stakeholders','Trigger','Priority','Status','Objective','Details','Action Owner','Link','Required Fields','Linked Metrics','Visual Link','Visual Note'];
+  const lines = [headers.join(',')];
+  rows.forEach(r=>{
+    const linkedNames = (r.linkedMetrics||[]).map(metricNameById).join(' | ');
+    const line = [r.name,r.source,r.platform,r.accessMethod,r.type,(r.stakeholders||[]).join(' | '),r.trigger,r.priority,r.status,r.objective,r.details,r.owner,r.link,(r.requiredFields||[]).join(' | '),linkedNames,r.visualLink,r.visualNote]
+      .map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
+    lines.push(line);
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='kulu-dashboard-roadmap.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- Metrics board ---------- */
+function renderMetrics(){
+  const board = document.getElementById('metricsBoard');
+  board.innerHTML = metrics.map((m,i)=>`
+    <div class="metric-card" draggable="true" ondragstart="onMetricDragStart(event,'${m.id}')" ondragend="onMetricDragEnd(event)">
+      <button class="m-remove" onclick="removeMetric(${i})">✕</button>
+      <div class="m-name" contenteditable="true" oninput="onMetricEdit(${i},this,'name')">${escapeHtml(m.name)}</div>
+      <div class="m-def" contenteditable="true" oninput="onMetricEdit(${i},this,'def')" data-placeholder="Add a definition...">${escapeHtml(m.def)}</div>
+    </div>
+  `).join('') + `<div class="metric-add-card" onclick="addMetric()">+ Add metric</div>`;
+}
+function onMetricEdit(i, el, field){ metrics[i][field] = el.innerText; scheduleSave(METRICS_KEY, ()=>metrics); }
+function addMetric(){ metrics.push({id:nextMetricId(), name:'New metric', def:'What does it measure?'}); renderMetrics(); scheduleSave(METRICS_KEY, ()=>metrics); }
+function removeMetric(i){ metrics.splice(i,1); renderMetrics(); scheduleSave(METRICS_KEY, ()=>metrics); renderTable(); }
+
+/* ---------- Modal ---------- */
+function openModal(idx){ currentModalIdx = idx; renderModalContent(); document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); currentModalIdx=null; renderTable(); }
+
+function renderModalContent(){
+  const idx = currentModalIdx;
+  const r = rows[idx];
+  const mdChecked = (r.stakeholders||[]).includes(hier.mdName);
+  const cxoChecks = hier.cxos.map(c=>`<label><input type="checkbox" ${(r.stakeholders||[]).includes(c.name)?'checked':''} onchange="toggleModalStakeholder('${esc1(c.name)}',this.checked)">${escapeHtml(c.name)}</label>`).join('');
+  const deptChecks = hier.departments.map(d=>`<label><input type="checkbox" ${(r.stakeholders||[]).includes(d.name)?'checked':''} onchange="toggleModalStakeholder('${esc1(d.name)}',this.checked)">${escapeHtml(d.name)}</label>`).join('');
+  const platOpts = PLATFORM_OPTS.map(p=>`<option value="${p}" ${p===r.platform?'selected':''}>${p}</option>`).join('');
+  const accOpts = ACCESS_OPTS.map(a=>`<option value="${a.v}" ${a.v===r.accessMethod?'selected':''}>${a.label}</option>`).join('');
+  const trigOpts = TRIGGER_OPTS.map(t=>`<option value="${t.v}" ${t.v===r.trigger?'selected':''}>${t.label}</option>`).join('');
+  const priOpts = PRIORITY_OPTS.map(p=>`<option value="${p}" ${p===r.priority?'selected':''}>${p}</option>`).join('');
+  const statusOpts = STATUS_OPTS.map(s=>`<option value="${s.v}" ${s.v===r.status?'selected':''}>${s.label}</option>`).join('');
+  const typeOpts = TYPE_OPTS.map(t=>`<option value="${t}" ${t===r.type?'selected':''}>${t}</option>`).join('');
+
+  document.getElementById('modalBox').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-eyebrow">${escapeHtml(r.platform)} · ${escapeHtml(r.accessMethod)}</div>
+    <div class="m-title" contenteditable="true" oninput="updateModalField('name',this.innerText)">${escapeHtml(r.name)}</div>
+    <div class="m-badges">
+      <select class="badge ${platClass(r.platform)}" onchange="updateModalField('platform',this.value);refreshModalBadges()">${platOpts}</select>
+      <select class="badge ${accClass(r.accessMethod)}" onchange="updateModalField('accessMethod',this.value);refreshModalBadges()">${accOpts}</select>
+      <select class="badge ${trigClass(r.trigger)}" onchange="updateModalField('trigger',this.value);refreshModalBadges()">${trigOpts}</select>
+      <select class="badge ${priClass(r.priority)}" onchange="updateModalField('priority',this.value);refreshModalBadges()">${priOpts}</select>
+      <select class="badge ${statusClass(r.status)}" onchange="updateModalField('status',this.value);refreshModalBadges()">${statusOpts}</select>
+    </div>
+
+    <div class="m-grid">
+      <div class="m-field"><div class="k">Source</div><input type="text" value="${escapeHtml(r.source)}" oninput="updateModalField('source',this.value)"></div>
+      <div class="m-field"><div class="k">Type</div><select onchange="updateModalField('type',this.value)">${typeOpts}</select></div>
+      <div class="m-field"><div class="k">Action Owner</div><input type="text" value="${escapeHtml(r.owner)}" oninput="updateModalField('owner',this.value)"></div>
+      <div class="m-field"><div class="k">Link</div><input type="text" value="${escapeHtml(r.link)}" placeholder="paste link" oninput="updateModalField('link',this.value)"></div>
+      <div class="m-field full"><div class="k">Objective</div><textarea oninput="updateModalField('objective',this.value)">${escapeHtml(r.objective)}</textarea></div>
+      <div class="m-field full"><div class="k">Details</div><textarea oninput="updateModalField('details',this.value)">${escapeHtml(r.details)}</textarea></div>
+    </div>
+
+    <div class="m-section">
+      <h5>Stakeholders</h5>
+      <div class="hint">Tag everyone this dashboard serves — a report can belong to more than one tier.</div>
+      <div class="m-stake-groups">
+        <div><div class="grp-label">MD</div><label><input type="checkbox" ${mdChecked?'checked':''} onchange="toggleModalStakeholder('${esc1(hier.mdName)}',this.checked)">${escapeHtml(hier.mdName)}</label></div>
+        <div><div class="grp-label">CXO</div>${cxoChecks}</div>
+        <div><div class="grp-label">Department</div>${deptChecks}</div>
+      </div>
+    </div>
+
+    <div class="m-section">
+      <h5>Required fields / columns</h5>
+      <div class="hint">What data points must this report contain?</div>
+      <div class="field-chips">${(r.requiredFields||[]).map((f,fi)=>`<span class="field-chip">${escapeHtml(f)}<button onclick="removeModalField(${fi})">✕</button></span>`).join('')}</div>
+      <div class="field-add-row">
+        <input type="text" id="modalFieldInput" placeholder="e.g. Transaction date, Agent ID, GTV..." onkeydown="if(event.key==='Enter'){addModalField();event.preventDefault();}">
+        <button onclick="addModalField()">Add</button>
+      </div>
+    </div>
+
+    <div class="m-section">
+      <h5>Linked metrics</h5>
+      <div class="hint">Drag metric cards onto this dashboard's row in the table, or remove a link here.</div>
+      <div class="field-chips">${(r.linkedMetrics||[]).map(id=>`<span class="field-chip">${escapeHtml(metricNameById(id))}<button onclick="unlinkModalMetric('${id}')">✕</button></span>`).join('') || '<span class="hint">No metrics linked yet.</span>'}</div>
+    </div>
+
+    <div class="m-section">
+      <h5>Visual reference <span class="visual-optional-tag">Optional</span></h5>
+      <div class="hint">Requestor can link, sketch-note, or attach a quick mockup of the desired layout. Note: Google Sheets can't store images, so an uploaded image only stays visible for this browser session — paste a Drive/Figma link instead if you need it to persist.</div>
+      <div class="visual-row">
+        <input type="text" value="${escapeHtml(r.visualLink)}" placeholder="Figma / image / doc link" oninput="updateModalField('visualLink',this.value)">
+        <label class="visual-upload-btn">Upload image (session only)<input type="file" accept="image/*" style="display:none;" onchange="onModalVisualUpload(this)"></label>
+      </div>
+      <div id="modalVisualPreview">${r.visualImage?`<div class="visual-preview"><img src="${r.visualImage}"><button onclick="removeModalVisualImage()">Remove image</button></div>`:''}</div>
+      <textarea class="visual-note" placeholder="Or just describe the layout in words..." oninput="updateModalField('visualNote',this.value)">${escapeHtml(r.visualNote)}</textarea>
+    </div>
+  `;
+}
+function updateModalField(field, value){ rows[currentModalIdx][field] = value; scheduleSave(ROWS_KEY, ()=>rows); }
+function refreshModalBadges(){ renderModalContent(); }
+function toggleModalStakeholder(name, checked){
+  const r = rows[currentModalIdx];
+  if(!r.stakeholders) r.stakeholders=[];
+  const pos = r.stakeholders.indexOf(name);
+  if(checked && pos===-1) r.stakeholders.push(name);
+  if(!checked && pos!==-1) r.stakeholders.splice(pos,1);
+  scheduleSave(ROWS_KEY, ()=>rows);
+}
+function addModalField(){
+  const input = document.getElementById('modalFieldInput');
+  const val = input.value.trim();
+  if(!val) return;
+  const r = rows[currentModalIdx];
+  if(!r.requiredFields) r.requiredFields=[];
+  r.requiredFields.push(val);
+  scheduleSave(ROWS_KEY, ()=>rows);
+  renderModalContent();
+  document.getElementById('modalFieldInput').focus();
+}
+function removeModalField(fi){ rows[currentModalIdx].requiredFields.splice(fi,1); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
+function unlinkModalMetric(id){ rows[currentModalIdx].linkedMetrics = (rows[currentModalIdx].linkedMetrics||[]).filter(x=>x!==id); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
+function onModalVisualUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let w=img.width, h=img.height;
+      if(w>MAX_IMG_DIM){ h=Math.round(h*(MAX_IMG_DIM/w)); w=MAX_IMG_DIM; }
+      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      rows[currentModalIdx].visualImage = canvas.toDataURL('image/jpeg',0.7);
+      scheduleSave(ROWS_KEY, ()=>rows);
+      renderModalContent();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removeModalVisualImage(){ rows[currentModalIdx].visualImage=''; scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
+
+/* ---------- Convert between this page's data shapes and the Sheet's row/column shapes ---------- */
+function splitList(s){ return (s||'').toString().split(',').map(x=>x.trim()).filter(Boolean); }
+
+function rowsToSheetFormat(){
+  return rows.map(r => ({
+    Name:r.name, Source:r.source, Platform:r.platform, AccessMethod:r.accessMethod, Type:r.type,
+    Stakeholders:(r.stakeholders||[]).join(', '), Trigger:r.trigger, Priority:r.priority, Status:r.status,
+    Objective:r.objective, Details:r.details, Owner:r.owner, Link:r.link,
+    RequiredFields:(r.requiredFields||[]).join(', '), LinkedMetrics:(r.linkedMetrics||[]).join(', '),
+    VisualLink:r.visualLink, VisualNote:r.visualNote
+  }));
+}
+function sheetFormatToRows(arr){
+  return (arr||[]).map(d => ({
+    name:d.Name||'', source:d.Source||'', platform:d.Platform||'Tableau', accessMethod:d.AccessMethod||'Emailed Export',
+    type:d.Type||'Live Dashboard', stakeholders:splitList(d.Stakeholders), trigger:d.Trigger||'Manual',
+    priority:d.Priority||'Medium', status:d.Status||'To Be Started', objective:d.Objective||'', details:d.Details||'',
+    owner:d.Owner||'', link:d.Link||'', requiredFields:splitList(d.RequiredFields), linkedMetrics:splitList(d.LinkedMetrics),
+    visualLink:d.VisualLink||'', visualNote:d.VisualNote||'', visualImage:''
+  }));
+}
+function mdToSheetFormat(){ return [{Name:hier.mdName, Title:hier.mdTitle, Location:hier.mdLocation}]; }
+function cxosToSheetFormat(){ return hier.cxos.map(c=>({Name:c.name, Title:c.title, Location:c.location})); }
+function deptsToSheetFormat(){ return hier.departments.map(d=>({Name:d.name, Location:d.location})); }
+function metricsToSheetFormat(){ return metrics.map(m=>({ID:m.id, Name:m.name, Definition:m.def})); }
+function sheetFormatToMetrics(arr){
+  return (arr||[]).map(m => ({ id:(m.ID && String(m.ID).trim()) ? String(m.ID).trim() : (m.Name||nextMetricId()), name:m.Name||'', def:m.Definition||'' }));
+}
+function notesToSheetFormat(){ return [{Notes: document.getElementById('notesDataBi').value}]; }
+function platformNoteToSheetFormat(){ return [{Title:platformNote.title, Body:platformNote.body}]; }
+
+/* ---------- Save / sync (Google Sheets via Apps Script Web App) ---------- */
+const saveTimers = {};
+function setSyncing(on){ document.getElementById('syncDot').classList.toggle('syncing', on); }
+function setSyncedNow(){ document.getElementById('syncText').textContent='Synced just now'; document.getElementById('syncText').dataset.ts=Date.now(); }
+function urlReady(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === -1; }
+
+async function persistToSheet(sheetName, rowsPayload){
+  if(!urlReady()){ document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL'; return; }
+  setSyncing(true);
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids a CORS preflight against Apps Script
+      body: JSON.stringify({ sheet: sheetName, rows: rowsPayload })
+    });
+    setSyncedNow();
+  }catch(e){
+    document.getElementById('syncText').textContent = 'Save failed, retrying...';
+    console.error(e);
+  }finally{ setSyncing(false); }
+}
+
+function scheduleSave(key){
+  clearTimeout(saveTimers[key]);
+  saveTimers[key] = setTimeout(()=>{
+    if(key===ROWS_KEY) persistToSheet('Dashboards', rowsToSheetFormat());
+    else if(key===HIER_KEY){
+      persistToSheet('MD', mdToSheetFormat());
+      persistToSheet('CXOs', cxosToSheetFormat());
+      persistToSheet('Departments', deptsToSheetFormat());
+    }
+    else if(key===METRICS_KEY) persistToSheet('Metrics', metricsToSheetFormat());
+    else if(key===NOTES_KEY) persistToSheet('Notes', notesToSheetFormat());
+    else if(key===PLATNOTE_KEY) persistToSheet('PlatformNote', platformNoteToSheetFormat());
+  }, 600);
+}
+
+function isUserEditing(){
+  const el = document.activeElement;
+  if(!el) return false;
+  return el.closest('.table-wrap') || el.closest('.hier-card') || el.closest('.notes-card') || el.closest('.metrics-board') || el.closest('.modal') || el.closest('.platform-note');
+}
+
+async function pullLatest(){
+  if(!urlReady()) return;
+  if(isUserEditing() || isSyncing || openStakeIdx!==null || currentModalIdx!==null) return;
+  isSyncing = true; setSyncing(true);
+  try{
+    const res = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
+    const data = await res.json();
+    rows = sheetFormatToRows(data.dashboards);
+    hier = {
+      mdName: (data.md && data.md.Name) || hier.mdName,
+      mdTitle: (data.md && data.md.Title) || hier.mdTitle,
+      mdLocation: (data.md && data.md.Location) || hier.mdLocation,
+      cxos: (data.cxos||[]).map(c=>({name:c.Name, title:c.Title, location:c.Location})),
+      departments: (data.departments||[]).map(d=>({name:d.Name, location:d.Location}))
+    };
+    metrics = sheetFormatToMetrics(data.metrics);
+    document.getElementById('notesDataBi').value = data.notes || '';
+    platformNote = {
+      title: (data.platformNote && data.platformNote.Title) || platformNote.title,
+      body: (data.platformNote && data.platformNote.Body) || platformNote.body
+    };
+    document.getElementById('platformNoteTitle').innerText = platformNote.title;
+    document.getElementById('platformNoteBody').innerText = platformNote.body;
+    renderHier(); renderTable(); renderMetrics();
+    setSyncedNow();
+  }catch(e){
+    console.error(e);
+    document.getElementById('syncText').textContent = 'Could not reach the Google Sheet';
+  }finally{ isSyncing=false; setSyncing(false); }
+}
+function manualRefresh(){ pullLatest(); }
+
+function tickSyncLabel(){
+  const el = document.getElementById('syncText');
+  const ts = parseInt(el.dataset.ts || Date.now());
+  const secs = Math.round((Date.now()-ts)/1000);
+  if(!isSyncing && urlReady()){ el.textContent = secs<5 ? 'Synced just now' : `Synced ${secs}s ago`; }
+}
+
+async function init(){
+  renderHier();
+  renderTable();
+  renderMetrics();
+
+  if(!urlReady()){
+    document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL';
+  }else{
+    await pullLatest();
+  }
+
+  document.getElementById('notesDataBi').addEventListener('input', ()=>{
+    scheduleSave(NOTES_KEY);
+  });
+  document.addEventListener('click', (e)=>{
+    if(openStakeIdx!==null && !e.target.closest('.stake-cell')) closeStakePopover();
+  });
+
+  if(urlReady()){
+    setInterval(()=>{ if(document.visibilityState==='visible') pullLatest(); }, POLL_MS);
+  }
+  setInterval(tickSyncLabel, 3000);
+}
+
+init();
+</script>
+</body>
+</html>
