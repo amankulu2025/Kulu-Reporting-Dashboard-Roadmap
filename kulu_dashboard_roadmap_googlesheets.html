@@ -1,4 +1,4 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -775,13 +775,33 @@ function setSyncing(on){ document.getElementById('syncDot').classList.toggle('sy
 function setSyncedNow(){ document.getElementById('syncText').textContent='Synced just now'; document.getElementById('syncText').dataset.ts=Date.now(); }
 function urlReady(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === -1; }
 
+// Apps Script responses don't carry the CORS headers a plain fetch() needs to
+// read them cross-origin — but a <script src="...&callback=fn"> tag isn't
+// subject to CORS, so reads go through JSONP instead.
+function jsonpRequest(url){
+  return new Promise((resolve, reject) => {
+    const cbName = 'kuluCb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    const script = document.createElement('script');
+    let settled = false;
+    window[cbName] = (data) => { settled = true; cleanup(); resolve(data); };
+    function cleanup(){ delete window[cbName]; script.remove(); clearTimeout(timer); }
+    script.onerror = () => { if(!settled){ cleanup(); reject(new Error('JSONP request failed to load')); } };
+    script.src = url + (url.indexOf('?') > -1 ? '&' : '?') + 'callback=' + cbName + '&t=' + Date.now();
+    const timer = setTimeout(() => { if(!settled){ cleanup(); reject(new Error('JSONP request timed out')); } }, 15000);
+    document.body.appendChild(script);
+  });
+}
+
 async function persistToSheet(sheetName, rowsPayload){
   if(!urlReady()){ document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL'; return; }
   setSyncing(true);
   try{
+    // mode:'no-cors' lets the write go through even though we can't read the
+    // response back (Apps Script doesn't send CORS headers on POST either).
     await fetch(APPS_SCRIPT_URL, {
       method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids a CORS preflight against Apps Script
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, // keeps this a "simple request" so no CORS preflight is triggered
       body: JSON.stringify({ sheet: sheetName, rows: rowsPayload })
     });
     setSyncedNow();
@@ -817,8 +837,7 @@ async function pullLatest(){
   if(isUserEditing() || isSyncing || openStakeIdx!==null || currentModalIdx!==null) return;
   isSyncing = true; setSyncing(true);
   try{
-    const res = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
-    const data = await res.json();
+    const data = await jsonpRequest(APPS_SCRIPT_URL);
     rows = sheetFormatToRows(data.dashboards);
     hier = {
       mdName: (data.md && data.md.Name) || hier.mdName,
