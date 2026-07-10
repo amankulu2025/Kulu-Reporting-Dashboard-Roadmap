@@ -828,6 +828,7 @@ async function pullLatest(){
       departments: (data.departments||[]).map(d=>({name:d.Name, location:d.Location}))
     };
     metrics = sheetFormatToMetrics(data.metrics);
+    autoCreateMissingMetrics();
     document.getElementById('notesDataBi').value = data.notes || '';
     platformNote = {
       title: (data.platformNote && data.platformNote.Title) || platformNote.title,
@@ -841,6 +842,24 @@ async function pullLatest(){
     console.error(e);
     document.getElementById('syncText').textContent = 'Could not reach the Google Sheet';
   }finally{ isSyncing=false; setSyncing(false); }
+}
+
+// If a dashboard's LinkedMetrics cell names a metric that doesn't exist yet
+// (typed in the Sheet before it was added to the Metrics tab), create it here
+// automatically and write it back — so it becomes a real, editable metric
+// card instead of showing as "(removed)".
+function metricExists(ref){ return metrics.some(x => x.id===ref || x.name===ref); }
+function autoCreateMissingMetrics(){
+  let createdAny = false;
+  rows.forEach(r => {
+    (r.linkedMetrics||[]).forEach(ref => {
+      if(ref && !metricExists(ref)){
+        metrics.push({ id: nextMetricId(), name: ref, def: '' });
+        createdAny = true;
+      }
+    });
+  });
+  if(createdAny) scheduleSave(METRICS_KEY);
 }
 function manualRefresh(){ pullLatest(); }
 
