@@ -341,13 +341,20 @@ select.cell-select:focus{outline:2px solid var(--blue);}
   </div>
 
   <div class="footnote">
-    <b>How sharing works today:</b> everyone who opens this same artifact link edits one shared workspace — changes appear for others within ~8 seconds. This stops working if the raw .html file is emailed or hosted outside Claude.
+    <b>How sharing works today:</b> this page is hosted on GitHub Pages and reads/writes a shared Google Sheet — anyone with the link sees the same data, and edits made here or directly in the Sheet sync both ways within about 8 seconds.
   </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
   <div class="modal" id="modalBox"></div>
 </div>
+
+<!-- Hidden delivery mechanism for saves: a real form submission survives
+     Apps Script's redirect intact, where a plain fetch() POST does not. -->
+<iframe name="kuluSyncFrame" id="kuluSyncFrame" style="display:none;"></iframe>
+<form id="kuluSyncForm" method="POST" target="kuluSyncFrame" style="display:none;">
+  <input type="hidden" name="payload" id="kuluSyncPayload">
+</form>
 
 <script>
 // ============================================================
@@ -792,18 +799,24 @@ function jsonpRequest(url){
   });
 }
 
-async function persistToSheet(sheetName, rowsPayload){
+let saveQueue = Promise.resolve();
+function persistToSheet(sheetName, rowsPayload){
+  saveQueue = saveQueue.then(() => doPersist(sheetName, rowsPayload));
+  return saveQueue;
+}
+async function doPersist(sheetName, rowsPayload){
   if(!urlReady()){ document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL'; return; }
   setSyncing(true);
   try{
-    // mode:'no-cors' lets the write go through even though we can't read the
-    // response back (Apps Script doesn't send CORS headers on POST either).
-    await fetch(APPS_SCRIPT_URL, {
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'}, // keeps this a "simple request" so no CORS preflight is triggered
-      body: JSON.stringify({ sheet: sheetName, rows: rowsPayload })
-    });
+    const form = document.getElementById('kuluSyncForm');
+    const input = document.getElementById('kuluSyncPayload');
+    input.value = JSON.stringify({ sheet: sheetName, rows: rowsPayload });
+    form.action = APPS_SCRIPT_URL;
+    form.submit();
+    // Submitting into a hidden iframe means we can't read a confirmation back
+    // (cross-origin), so this is optimistic — it marks synced shortly after
+    // sending rather than waiting for a response that we can't see anyway.
+    await new Promise(resolve => setTimeout(resolve, 900));
     setSyncedNow();
   }catch(e){
     document.getElementById('syncText').textContent = 'Save failed, retrying...';
