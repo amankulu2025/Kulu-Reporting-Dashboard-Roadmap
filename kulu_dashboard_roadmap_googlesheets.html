@@ -76,6 +76,13 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;ba
 .platform-note [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--blue);border-radius:6px;}
 
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.filter-input{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-family:inherit;min-width:200px;background:#fff;color:var(--ink);}
+.filter-input:focus{outline:2px solid var(--blue);}
+.filter-select{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-family:inherit;background:#fff;color:var(--ink);cursor:pointer;}
+.filter-select:focus{outline:2px solid var(--blue);}
+.filter-count{font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap;}
+.no-results-row td{text-align:center;padding:34px;color:var(--muted);font-size:13px;}
 .btn{border:1px solid var(--line);background:#fff;color:var(--med);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s ease;}
 .btn:hover{border-color:var(--blue);box-shadow:0 4px 10px rgba(19,62,148,.1);}
 .btn.primary{background:var(--med);color:#fff;border-color:var(--med);}
@@ -277,6 +284,16 @@ select.cell-select:focus{outline:2px solid var(--blue);}
     <button class="btn ghost" onclick="clearAll()">Clear all</button>
   </div>
 
+  <div class="filter-bar">
+    <input type="text" id="filterSearch" class="filter-input" placeholder="Search name, source, objective...">
+    <select id="filterPlatform" class="filter-select"><option value="">All platforms</option></select>
+    <select id="filterPriority" class="filter-select"><option value="">All priorities</option></select>
+    <select id="filterStatus" class="filter-select"><option value="">All statuses</option></select>
+    <select id="filterStakeholder" class="filter-select"><option value="">All stakeholders</option></select>
+    <button class="btn ghost" onclick="clearFilters()">Clear filters</button>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -375,6 +392,7 @@ let hier = {
 let metrics = seedMetrics();
 let platformNote = { title:'Tableau is our primary reporting platform', body:'Full seats are costly to extend to everyone. Proposal: give direct Tableau access to a small group of key stakeholders, and distribute scheduled report exports by email to everyone else. Tracked per dashboard in the "Access" column below.' };
 let openStakeIdx = null;
+let filters = { search:'', platform:'', priority:'', status:'', stakeholder:'' };
 let currentModalIdx = null;
 let isSyncing = false;
 
@@ -430,6 +448,8 @@ function renderHier(){
       <span contenteditable="true" oninput="onDeptEdit(${i},this)">${escapeHtml(d.name)}</span>
       <button class="chip-del" onclick="removeDept(${i})">✕</button>
     </span>`).join('') + `<button class="dept-add" onclick="addDept()">+ Add department</button>`;
+
+  populateFilterOptions();
 }
 function onHierEdit(){ hier.mdName=document.getElementById('mdName').innerText; hier.mdTitle=document.getElementById('mdTitle').innerText; scheduleSave(HIER_KEY, ()=>hier); }
 function toggleMdLocation(){ hier.mdLocation = hier.mdLocation==='Dubai' ? 'Guinea' : 'Dubai'; renderHier(); scheduleSave(HIER_KEY, ()=>hier); }
@@ -497,9 +517,33 @@ function linkedMetricsHtml(idx, linked){
   return linked.map(id=>`<span class="linked-metric-chip">${escapeHtml(metricNameById(id))}<button onclick="event.stopPropagation();unlinkMetric(${idx},'${esc1(id)}')">✕</button></span>`).join('');
 }
 
+function rowMatchesFilters(r){
+  if(filters.search){
+    const s = filters.search.toLowerCase();
+    const hay = ((r.name||'')+' '+(r.source||'')+' '+(r.objective||'')).toLowerCase();
+    if(!hay.includes(s)) return false;
+  }
+  if(filters.platform && r.platform!==filters.platform) return false;
+  if(filters.priority && r.priority!==filters.priority) return false;
+  if(filters.status && r.status!==filters.status) return false;
+  if(filters.stakeholder && !(r.stakeholders||[]).includes(filters.stakeholder)) return false;
+  return true;
+}
+function getFilteredIndices(){
+  return rows.map((r,i)=>i).filter(i => rowMatchesFilters(rows[i]));
+}
+function hasActiveFilters(){
+  return !!(filters.search || filters.platform || filters.priority || filters.status || filters.stakeholder);
+}
+
 function renderTable(){
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = rows.map((r,i)=>`
+  const indices = getFilteredIndices();
+
+  if(indices.length===0){
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">${rows.length===0 ? 'No dashboards yet — click "+ Add dashboard" to start.' : 'No dashboards match these filters.'}</td></tr>`;
+  }else{
+    tbody.innerHTML = indices.map(i => { const r = rows[i]; return `
     <tr class="main-row" data-idx="${i}" onclick="rowClicked(event,${i})" ondragover="onRowDragOver(event)" ondragleave="onRowDragLeave(event)" ondrop="onRowDrop(event,${i})">
       <td class="row-actions"><button class="view-btn" onclick="event.stopPropagation();openModal(${i})" title="View details">⤢</button></td>
       <td class="row-actions"><button class="del-btn" onclick="event.stopPropagation();deleteRow(${i})" title="Remove row">✕</button></td>
@@ -520,8 +564,8 @@ function renderTable(){
       ${selectCell(i,'status',STATUS_OPTS,r.status,statusClass)}
       <td><button class="fields-badge" onclick="event.stopPropagation();openModal(${i})">${(r.requiredFields||[]).length} field${(r.requiredFields||[]).length===1?'':'s'}</button></td>
       <td class="metrics-cell">${linkedMetricsHtml(i, r.linkedMetrics)}</td>
-    </tr>
-  `).join('');
+    </tr>`; }).join('');
+  }
 
   tbody.querySelectorAll('.col-name').forEach(td=>{
     td.addEventListener('input', ()=>{
@@ -530,6 +574,46 @@ function renderTable(){
       scheduleSave(ROWS_KEY, ()=>rows);
     });
   });
+
+  const countEl = document.getElementById('filterCount');
+  if(countEl) countEl.textContent = hasActiveFilters() ? `Showing ${indices.length} of ${rows.length}` : `${rows.length} dashboard${rows.length===1?'':'s'}`;
+}
+
+function populateFilterOptions(){
+  const platSel = document.getElementById('filterPlatform');
+  const priSel = document.getElementById('filterPriority');
+  const statSel = document.getElementById('filterStatus');
+  const stakeSel = document.getElementById('filterStakeholder');
+  if(!platSel) return; // not yet in DOM on first call
+
+  if(platSel.options.length<=1){
+    platSel.innerHTML = '<option value="">All platforms</option>' + PLATFORM_OPTS.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+  if(priSel.options.length<=1){
+    priSel.innerHTML = '<option value="">All priorities</option>' + PRIORITY_OPTS.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+  if(statSel.options.length<=1){
+    statSel.innerHTML = '<option value="">All statuses</option>' + STATUS_OPTS.map(s=>`<option value="${s.v}">${s.label}</option>`).join('');
+  }
+  const names = [hier.mdName, ...hier.cxos.map(c=>c.name), ...hier.departments.map(d=>d.name)];
+  const cur = filters.stakeholder;
+  stakeSel.innerHTML = '<option value="">All stakeholders</option>' + names.map(n=>`<option value="${escapeHtml(n)}" ${n===cur?'selected':''}>${escapeHtml(n)}</option>`).join('');
+}
+
+function clearFilters(){
+  filters = { search:'', platform:'', priority:'', status:'', stakeholder:'' };
+  ['filterSearch'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['filterPlatform','filterPriority','filterStatus','filterStakeholder'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  renderTable();
+}
+
+function initFilterBar(){
+  const search = document.getElementById('filterSearch');
+  search.addEventListener('input', e=>{ filters.search = e.target.value; renderTable(); });
+  document.getElementById('filterPlatform').addEventListener('change', e=>{ filters.platform = e.target.value; renderTable(); });
+  document.getElementById('filterPriority').addEventListener('change', e=>{ filters.priority = e.target.value; renderTable(); });
+  document.getElementById('filterStatus').addEventListener('change', e=>{ filters.status = e.target.value; renderTable(); });
+  document.getElementById('filterStakeholder').addEventListener('change', e=>{ filters.stakeholder = e.target.value; renderTable(); });
 }
 
 function rowClicked(e, idx){
@@ -810,7 +894,7 @@ function scheduleSave(key){
 function isUserEditing(){
   const el = document.activeElement;
   if(!el) return false;
-  return el.closest('.table-wrap') || el.closest('.hier-card') || el.closest('.notes-card') || el.closest('.metrics-board') || el.closest('.modal') || el.closest('.platform-note');
+  return el.closest('.table-wrap') || el.closest('.hier-card') || el.closest('.notes-card') || el.closest('.metrics-board') || el.closest('.modal') || el.closest('.platform-note') || el.closest('.filter-bar');
 }
 
 async function pullLatest(){
@@ -874,6 +958,7 @@ async function init(){
   renderHier();
   renderTable();
   renderMetrics();
+  initFilterBar();
 
   if(!urlReady()){
     document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL';
