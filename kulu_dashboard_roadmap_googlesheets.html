@@ -90,8 +90,11 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;ba
 .btn.ghost{color:var(--muted);}
 
 .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;margin-bottom:34px;}
-table{width:100%;border-collapse:collapse;min-width:1420px;font-size:12.5px;}
-thead th{background:var(--med);color:#fff;font-weight:700;text-align:left;padding:10px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;white-space:nowrap;}
+table{width:100%;border-collapse:collapse;min-width:1320px;table-layout:fixed;font-size:12.5px;}
+thead th{background:var(--med);color:#fff;font-weight:700;text-align:left;padding:10px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.col-resize-handle{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:6;user-select:none;}
+.col-resize-handle:hover, .col-resize-handle.active{background:rgba(255,255,255,.35);}
+thead th.resizable-th{position:relative;}
 tbody td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top;}
 tbody tr.main-row:nth-child(even){background:var(--paper);}
 tbody tr.main-row:hover{background:var(--light);cursor:pointer;}
@@ -296,6 +299,19 @@ select.cell-select:focus{outline:2px solid var(--blue);}
 
   <div class="table-wrap">
     <table>
+      <colgroup>
+        <col style="width:30px;">
+        <col style="width:30px;">
+        <col style="width:200px;">
+        <col style="width:120px;">
+        <col style="width:140px;">
+        <col style="width:170px;">
+        <col style="width:140px;">
+        <col style="width:100px;">
+        <col style="width:120px;">
+        <col style="width:100px;">
+        <col style="width:170px;">
+      </colgroup>
       <thead>
         <tr>
           <th style="width:26px;"></th>
@@ -616,6 +632,40 @@ function initFilterBar(){
   document.getElementById('filterStakeholder').addEventListener('change', e=>{ filters.stakeholder = e.target.value; renderTable(); });
 }
 
+// Drag-to-resize table columns. Widths live only in this browser tab for
+// this session (not saved to the Sheet) — reload resets them to default.
+function initColumnResize(){
+  const table = document.querySelector('.table-wrap table');
+  if(!table) return;
+  const cols = table.querySelectorAll('colgroup col');
+  const ths = table.querySelectorAll('thead th');
+  ths.forEach((th, i) => {
+    if(i < 2 || i >= cols.length - 1) return; // skip icon columns and the last column
+    th.classList.add('resizable-th');
+    const handle = document.createElement('div');
+    handle.className = 'col-resize-handle';
+    th.appendChild(handle);
+    handle.addEventListener('mousedown', (e) => startColResize(e, cols[i], handle));
+  });
+}
+function startColResize(e, col, handle){
+  e.preventDefault();
+  const startX = e.clientX;
+  const startWidth = col.getBoundingClientRect().width;
+  handle.classList.add('active');
+  function onMove(ev){
+    const newWidth = Math.max(50, Math.round(startWidth + (ev.clientX - startX)));
+    col.style.width = newWidth + 'px';
+  }
+  function onUp(){
+    handle.classList.remove('active');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
 function rowClicked(e, idx){
   const t = e.target;
   if(t.closest('select') || t.closest('input') || t.closest('button') || t.closest('[contenteditable="true"]') || t.closest('.stake-popover')) return;
@@ -743,12 +793,14 @@ function renderModalContent(){
 
     <div class="m-section">
       <h5>Visual reference <span class="visual-optional-tag">Optional</span></h5>
-      <div class="hint">Requestor can link, sketch-note, or attach a quick mockup of the desired layout. Note: Google Sheets can't store images, so an uploaded image only stays visible for this browser session — paste a Drive/Figma link instead if you need it to persist.</div>
+      <div class="hint">Requestor can link, sketch-note, or upload a quick mockup — uploads are saved to a "Kulu Dashboard Visuals" folder in Drive and the link is stored automatically.</div>
       <div class="visual-row">
         <input type="text" value="${escapeHtml(r.visualLink)}" placeholder="Figma / image / doc link" oninput="updateModalField('visualLink',this.value)">
-        <label class="visual-upload-btn">Upload image (session only)<input type="file" accept="image/*" style="display:none;" onchange="onModalVisualUpload(this)"></label>
+        ${r.visualLink?`<a href="${escapeHtml(r.visualLink)}" target="_blank" rel="noopener" class="visual-upload-btn" style="text-decoration:none;text-align:center;">Open ↗</a>`:''}
+        <label class="visual-upload-btn">Upload image<input type="file" accept="image/*" style="display:none;" onchange="onModalVisualUpload(this)"></label>
       </div>
-      <div id="modalVisualPreview">${r.visualImage?`<div class="visual-preview"><img src="${r.visualImage}"><button onclick="removeModalVisualImage()">Remove image</button></div>`:''}</div>
+      <div id="modalUploadStatus" class="hint" style="margin:-2px 0 6px;"></div>
+      <div id="modalVisualPreview">${r.visualImage?`<div class="visual-preview"><img src="${r.visualImage}"><button onclick="removeModalVisualImage()">Remove local preview</button></div>`:''}</div>
       <textarea class="visual-note" placeholder="Or just describe the layout in words..." oninput="updateModalField('visualNote',this.value)">${escapeHtml(r.visualNote)}</textarea>
     </div>
   `;
@@ -787,13 +839,49 @@ function onModalVisualUpload(input){
       if(w>MAX_IMG_DIM){ h=Math.round(h*(MAX_IMG_DIM/w)); w=MAX_IMG_DIM; }
       const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      rows[currentModalIdx].visualImage = canvas.toDataURL('image/jpeg',0.7);
-      scheduleSave(ROWS_KEY, ()=>rows);
+      const dataUrl = canvas.toDataURL('image/jpeg',0.75);
+
+      const rowIdx = currentModalIdx;
+      const uploadId = 'up_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+      const safeName = (rows[rowIdx].name || 'visual').toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40);
+
+      // Show it immediately as a local preview while the real upload happens
+      // in the background — this local copy gets replaced by the Drive link
+      // once the upload confirms.
+      rows[rowIdx].visualImage = dataUrl;
       renderModalContent();
+      setUploadStatus('Uploading to Drive…');
+
+      queueFormSubmit({ action:'uploadImage', uploadId, dataUrl, filename: safeName + '-' + uploadId + '.jpg' })
+        .then(() => pollForUploadResult(uploadId, rowIdx, 8));
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+async function pollForUploadResult(uploadId, rowIdx, attemptsLeft){
+  try{
+    const data = await jsonpRequest(APPS_SCRIPT_URL);
+    const match = (data.uploads||[]).find(u => u.ID===uploadId);
+    if(match && match.URL){
+      rows[rowIdx].visualLink = match.URL;
+      rows[rowIdx].visualImage = '';
+      scheduleSave(ROWS_KEY, ()=>rows);
+      setUploadStatus('Uploaded to Drive ✓');
+      if(currentModalIdx===rowIdx) renderModalContent();
+      return;
+    }
+  }catch(e){ console.error(e); }
+  if(attemptsLeft>1){
+    setTimeout(()=>pollForUploadResult(uploadId, rowIdx, attemptsLeft-1), 1500);
+  }else{
+    setUploadStatus('Still processing — it should appear within a minute; refresh if not.');
+  }
+}
+function setUploadStatus(msg){
+  const el = document.getElementById('modalUploadStatus');
+  if(el) el.textContent = msg;
 }
 function removeModalVisualImage(){ rows[currentModalIdx].visualImage=''; scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
 
@@ -852,17 +940,20 @@ function jsonpRequest(url){
 }
 
 let saveQueue = Promise.resolve();
-function persistToSheet(sheetName, rowsPayload){
-  saveQueue = saveQueue.then(() => doPersist(sheetName, rowsPayload));
+function queueFormSubmit(payloadObj){
+  saveQueue = saveQueue.then(() => submitViaHiddenForm(payloadObj));
   return saveQueue;
 }
-async function doPersist(sheetName, rowsPayload){
+function persistToSheet(sheetName, rowsPayload){
+  return queueFormSubmit({ sheet: sheetName, rows: rowsPayload });
+}
+async function submitViaHiddenForm(payloadObj){
   if(!urlReady()){ document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL'; return; }
   setSyncing(true);
   try{
     const form = document.getElementById('kuluSyncForm');
     const input = document.getElementById('kuluSyncPayload');
-    input.value = JSON.stringify({ sheet: sheetName, rows: rowsPayload });
+    input.value = JSON.stringify(payloadObj);
     form.action = APPS_SCRIPT_URL;
     form.submit();
     // Submitting into a hidden iframe means we can't read a confirmation back
@@ -959,6 +1050,7 @@ async function init(){
   renderTable();
   renderMetrics();
   initFilterBar();
+  initColumnResize();
 
   if(!urlReady()){
     document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL';
