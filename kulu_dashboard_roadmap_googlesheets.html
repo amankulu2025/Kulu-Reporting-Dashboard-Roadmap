@@ -35,6 +35,77 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;ba
 .sync-text{font-size:11.5px;color:#DCE7FA;}
 .sync-refresh{border:none;background:transparent;color:#fff;cursor:pointer;font-size:13px;padding:0;opacity:.8;}
 .sync-refresh:hover{opacity:1;}
+.username-input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;font-size:12px;color:#fff;font-family:inherit;min-width:170px;}
+.username-input::placeholder{color:#B9C8E8;}
+.username-input:focus{outline:2px solid var(--blue);background:rgba(255,255,255,.18);}
+.presenter-btn.active{background:var(--blue);color:var(--dark);border-color:var(--blue);}
+
+/* Summary strip */
+.summary-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.summary-chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:5px;}
+.summary-chip b{color:var(--dark);font-size:13px;}
+
+/* Owner badges */
+.owner-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--light);color:var(--med);font-size:10.5px;font-weight:800;cursor:default;}
+.owner-badge.unassigned{background:var(--paper);color:#A8B4CC;border:1px dashed var(--line);}
+
+/* Sortable headers */
+th.sortable{cursor:pointer;user-select:none;}
+th.sortable:hover{background:var(--dark);}
+.sort-arrow{opacity:.5;font-size:9px;margin-left:4px;}
+.sort-arrow.active{opacity:1;}
+
+/* Recently changed */
+tr.row-recent{box-shadow:inset 3px 0 0 var(--blue);}
+.recent-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);margin-left:6px;vertical-align:middle;}
+.updated-meta{font-size:9.5px;color:#A8B4CC;font-weight:600;margin-top:1px;}
+
+/* Bulk edit */
+.bulk-bar{display:none;align-items:center;gap:10px;background:var(--dark);color:#fff;border-radius:12px;padding:10px 16px;margin-bottom:14px;flex-wrap:wrap;}
+.bulk-bar.show{display:flex;}
+.bulk-bar .count{font-size:12.5px;font-weight:700;}
+.bulk-bar select{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;}
+.bulk-bar select option{color:#12203D;}
+.bulk-bar button{border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;}
+.bulk-bar button:hover{background:rgba(255,255,255,.15);}
+.bulk-bar button.danger{border-color:var(--red);color:#FFC9C9;}
+.checkbox-cell{width:26px;text-align:center;}
+.checkbox-cell input{width:15px;height:15px;accent-color:var(--blue);cursor:pointer;}
+
+/* Comments */
+.comment-item{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:8px;}
+.comment-item .c-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px;}
+.comment-item .c-author{font-weight:800;color:var(--med);}
+.comment-item .c-text{font-size:12.5px;color:var(--ink);line-height:1.5;}
+.comment-add-row{display:flex;gap:6px;margin-top:10px;}
+.comment-add-row input{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;font-family:inherit;}
+.comment-add-row button{border:1px solid var(--med);background:var(--med);color:#fff;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* Request access */
+.request-access-btn{border:1px solid var(--amber);background:#FFF3E2;color:var(--amber);border-radius:999px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;margin-top:6px;}
+.request-access-btn:hover{background:var(--amber);color:#fff;}
+.request-access-btn.sent{border-color:var(--green);background:#E9F7F0;color:var(--green);cursor:default;}
+
+/* Priority x Status matrix */
+.matrix-grid{display:grid;grid-template-columns:120px repeat(4,1fr);gap:8px;margin-bottom:34px;}
+.matrix-corner{}
+.matrix-col-head{background:var(--med);color:#fff;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:8px;border-radius:8px;text-align:center;}
+.matrix-row-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:8px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;}
+.matrix-cell{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;min-height:56px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px;}
+.matrix-chip{background:var(--light);color:var(--med);font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:default;}
+.matrix-empty{color:#C6D0E4;font-size:11px;margin:auto;}
+
+/* Presenter mode: hide edit affordances */
+body.presenter-mode .del-btn, body.presenter-mode .dup-btn, body.presenter-mode .toolbar,
+body.presenter-mode .col-resize-handle, body.presenter-mode .checkbox-cell,
+body.presenter-mode .bulk-bar, body.presenter-mode .stake-edit-btn, body.presenter-mode .dept-add,
+body.presenter-mode .metric-add-card, body.presenter-mode .m-remove, body.presenter-mode .field-chip button,
+body.presenter-mode .linked-metric-chip button, body.presenter-mode .chip-del, body.presenter-mode .loc-dot,
+body.presenter-mode .comment-add-row, body.presenter-mode .request-access-btn, body.presenter-mode .visual-upload-btn,
+body.presenter-mode .field-add-row{ display:none !important; }
+body.presenter-mode [contenteditable="true"]{ pointer-events:none; }
+body.presenter-mode select, body.presenter-mode input, body.presenter-mode textarea{ pointer-events:none; background:transparent !important; border-color:transparent !important; }
+body.presenter-mode .username-input{ pointer-events:auto; }
 
 .wrap{max-width:1400px;margin:0 auto;padding:28px 32px 80px;}
 .section-title{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--med);margin:0 0 4px;display:flex;align-items:center;gap:10px;}
@@ -230,10 +301,14 @@ select.cell-select:focus{outline:2px solid var(--blue);}
     <h1>Reporting & Dashboard Roadmap</h1>
     <div class="sub">Shared, live-editable inventory of every report/dashboard the team sends, receives, or uses.</div>
   </div>
-  <div class="sync-box">
-    <div class="sync-dot" id="syncDot"></div>
-    <div class="sync-text" id="syncText">Synced just now</div>
-    <button class="sync-refresh" onclick="manualRefresh()" title="Refresh now">↻</button>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <input type="text" id="userNameInput" class="username-input" placeholder="Your name (for comments & updates)">
+    <button class="btn ghost presenter-btn" id="presenterToggleBtn" onclick="togglePresenterMode()">Presenter mode</button>
+    <div class="sync-box">
+      <div class="sync-dot" id="syncDot"></div>
+      <div class="sync-text" id="syncText">Synced just now</div>
+      <button class="sync-refresh" onclick="manualRefresh()" title="Refresh now">↻</button>
+    </div>
   </div>
 </div>
 
@@ -281,6 +356,8 @@ select.cell-select:focus{outline:2px solid var(--blue);}
   <div class="section-title">Dashboard & report inventory</div>
   <div class="section-sub">Click a row to open its full detail card. Drag a card from the metrics board below and drop it on a row to link that metric to that report.</div>
 
+  <div class="summary-strip" id="summaryStrip"></div>
+
   <div class="toolbar">
     <button class="btn primary" onclick="addRow()">+ Add dashboard</button>
     <button class="btn ghost" onclick="exportCSV()">Export CSV</button>
@@ -297,32 +374,45 @@ select.cell-select:focus{outline:2px solid var(--blue);}
     <span class="filter-count" id="filterCount"></span>
   </div>
 
+  <div class="bulk-bar" id="bulkBar">
+    <span class="count" id="bulkCount">0 selected</span>
+    <select id="bulkPriority"><option value="">Set priority…</option></select>
+    <select id="bulkStatus"><option value="">Set status…</option></select>
+    <button onclick="applyBulkEdit()">Apply</button>
+    <button class="danger" onclick="bulkDelete()">Delete selected</button>
+    <button onclick="clearSelection()">Clear selection</button>
+  </div>
+
   <div class="table-wrap">
     <table>
       <colgroup>
-        <col style="width:30px;">
-        <col style="width:30px;">
-        <col style="width:200px;">
-        <col style="width:120px;">
-        <col style="width:140px;">
-        <col style="width:170px;">
-        <col style="width:140px;">
-        <col style="width:100px;">
-        <col style="width:120px;">
-        <col style="width:100px;">
-        <col style="width:170px;">
+        <col style="width:26px;">
+        <col style="width:26px;">
+        <col style="width:26px;">
+        <col style="width:190px;">
+        <col style="width:56px;">
+        <col style="width:110px;">
+        <col style="width:130px;">
+        <col style="width:150px;">
+        <col style="width:130px;">
+        <col style="width:90px;">
+        <col style="width:110px;">
+        <col style="width:90px;">
+        <col style="width:150px;">
       </colgroup>
       <thead>
         <tr>
           <th style="width:26px;"></th>
           <th style="width:26px;"></th>
-          <th>Dashboard / Report</th>
-          <th>Platform</th>
+          <th style="width:26px;"></th>
+          <th class="sortable" onclick="setSortCol('name')">Dashboard / Report <span class="sort-arrow" id="sortArrow-name">↕</span></th>
+          <th title="Action Owner">Owner</th>
+          <th class="sortable" onclick="setSortCol('platform')">Platform <span class="sort-arrow" id="sortArrow-platform">↕</span></th>
           <th>Access</th>
           <th>Stakeholders</th>
           <th>Trigger (TBD - Data BI team)</th>
-          <th>Priority</th>
-          <th>Status</th>
+          <th class="sortable" onclick="setSortCol('priority')">Priority <span class="sort-arrow" id="sortArrow-priority">↕</span></th>
+          <th class="sortable" onclick="setSortCol('status')">Status <span class="sort-arrow" id="sortArrow-status">↕</span></th>
           <th>Required Fields</th>
           <th>Linked Metrics</th>
         </tr>
@@ -330,6 +420,10 @@ select.cell-select:focus{outline:2px solid var(--blue);}
       <tbody id="tableBody"></tbody>
     </table>
   </div>
+
+  <div class="section-title">Priority × Status matrix</div>
+  <div class="section-sub">Where everything stands at a glance — click any chip to jump to that dashboard.</div>
+  <div class="matrix-grid" id="matrixGrid"></div>
 
   <div class="section-title">Metrics board</div>
   <div class="section-sub metrics-hint">Drag any card onto a dashboard row above to link it to that report.</div>
@@ -411,6 +505,11 @@ let openStakeIdx = null;
 let filters = { search:'', platform:'', priority:'', status:'', stakeholder:'' };
 let currentModalIdx = null;
 let isSyncing = false;
+let allComments = [];
+let allAccessRequests = [];
+let selectedIdx = new Set();
+let sortState = { col:null, dir:1 };
+let currentUserName = '';
 
 function cxoNames(){ return hier.cxos.map(c=>c.name); }
 function deptNames(){ return hier.departments.map(d=>d.name); }
@@ -420,9 +519,11 @@ function levelForName(name){
   return 'Department';
 }
 function nextMetricId(){ return 'm_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+function generateRowId(){ return 'r_' + Date.now() + '_' + Math.floor(Math.random()*100000); }
+function generateGenericId(prefix){ return (prefix||'x') + '_' + Date.now() + '_' + Math.floor(Math.random()*100000); }
 
 function seedRows(){
-  return [
+  const base = [
     {name:'Wallet Activation & Onboarding Funnel', source:'Growth & Product', platform:'Tableau', accessMethod:'Full Tableau License', type:'Live Dashboard', stakeholders:['Mr. Roshan','Dinko','Product'], trigger:'OnDemand', priority:'High', status:'Deployed', objective:'Track new users from sign-up through KYC completion to first transaction.', details:'Refreshed daily; core adoption funnel for Guinea launch markets.', owner:'', link:'', requiredFields:['Signup date','KYC status','Time to first transaction','Region'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
     {name:'Transaction Volume & GTV Dashboard', source:'Finance & Analytics', platform:'Tableau', accessMethod:'Full Tableau License', type:'Live Dashboard', stakeholders:['Mr. Roshan','Dinko','Gabriel','Finance'], trigger:'Automatic', priority:'High', status:'Deployed', objective:'Daily and weekly GTV and transaction count across wallet, CICO, and bill pay.', details:'Auto-refreshed each morning before the leadership standup.', owner:'', link:'', requiredFields:['GTV','Transaction count','Transaction type','Date'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
     {name:'Agent Network & CICO Liquidity Report', source:'Distribution', platform:'Tableau', accessMethod:'Emailed Export', type:'PDF', stakeholders:['Sory','Distribution'], trigger:'Manual', priority:'Medium', status:'WIP', objective:'Monitor agent float levels and cash-in/cash-out balance across regions.', details:'Weekly export emailed to regional leads who do not hold a Tableau seat.', owner:'', link:'', requiredFields:['Agent ID','Region','Float balance','CICO volume'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
@@ -431,6 +532,7 @@ function seedRows(){
     {name:'Customer Support & Complaints Tracker', source:'Customer Support', platform:'Excel', accessMethod:'Emailed Export', type:'Excel Export', stakeholders:['Billo','Marketing'], trigger:'Manual', priority:'Medium', status:'Deployed', objective:'Track ticket volume, resolution time, and top complaint categories.', details:'Compiled weekly from the support tool export.', owner:'', link:'', requiredFields:['Ticket ID','Category','Resolution time','Channel'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''},
     {name:'Monthly Finance Reconciliation', source:'Finance', platform:'Excel', accessMethod:'Emailed Export', type:'Excel Export', stakeholders:['Mr. Roshan','Finance'], trigger:'Manual', priority:'High', status:'Issue Fixation', objective:'Reconcile GTV, revenue, and float across wallet ledger and bank statements.', details:'Manually compiled month-end.', owner:'', link:'', requiredFields:['GTV','Net revenue','Float variance','Reconciliation date'], linkedMetrics:[], visualLink:'', visualNote:'', visualImage:''}
   ];
+  return base.map(r => Object.assign({ id:generateRowId(), eta:'', updatedAt:'', updatedBy:'' }, r));
 }
 function seedMetrics(){
   return [
@@ -512,6 +614,7 @@ function toggleStakeholder(idx, name, checked){
   const pos = arr.indexOf(name);
   if(checked && pos===-1) arr.push(name);
   if(!checked && pos!==-1) arr.splice(pos,1);
+  touchRow(idx);
   scheduleSave(ROWS_KEY, ()=>rows);
   const cellWrap = document.querySelector(`tr[data-idx="${idx}"] .stake-chips-wrap`);
   if(cellWrap) cellWrap.innerHTML = stakeChipsHtml(arr) + `<button class="stake-edit-btn" onclick="event.stopPropagation();toggleStakePopover(${idx})">✎</button>`;
@@ -545,27 +648,81 @@ function rowMatchesFilters(r){
   if(filters.stakeholder && !(r.stakeholders||[]).includes(filters.stakeholder)) return false;
   return true;
 }
+const PRIORITY_ORDER = {High:0, Medium:1, Low:2};
+function sortValueFor(r, col){
+  if(col==='name') return (r.name||'').toLowerCase();
+  if(col==='platform') return (r.platform||'').toLowerCase();
+  if(col==='priority') return PRIORITY_ORDER[r.priority] !== undefined ? PRIORITY_ORDER[r.priority] : 9;
+  if(col==='status') return (r.status||'').toLowerCase();
+  return '';
+}
+function setSortCol(col){
+  if(sortState.col===col){ sortState.dir = -sortState.dir; }
+  else { sortState.col = col; sortState.dir = 1; }
+  renderTable();
+}
+function updateSortArrows(){
+  ['name','platform','priority','status'].forEach(c=>{
+    const el = document.getElementById('sortArrow-'+c);
+    if(!el) return;
+    if(sortState.col===c){ el.textContent = sortState.dir===1 ? '▲' : '▼'; el.classList.add('active'); }
+    else { el.textContent = '↕'; el.classList.remove('active'); }
+  });
+}
 function getFilteredIndices(){
-  return rows.map((r,i)=>i).filter(i => rowMatchesFilters(rows[i]));
+  let indices = rows.map((r,i)=>i).filter(i => rowMatchesFilters(rows[i]));
+  if(sortState.col){
+    indices.sort((a,b)=>{
+      const va = sortValueFor(rows[a], sortState.col), vb = sortValueFor(rows[b], sortState.col);
+      if(va<vb) return -1*sortState.dir;
+      if(va>vb) return 1*sortState.dir;
+      return 0;
+    });
+  }
+  return indices;
 }
 function hasActiveFilters(){
   return !!(filters.search || filters.platform || filters.priority || filters.status || filters.stakeholder);
+}
+function initialsFor(name){
+  if(!name || !name.trim()) return '?';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0][0]||'') + (parts[1]?parts[1][0]:'')).toUpperCase();
+}
+function isRecentlyUpdated(r){
+  if(!r.updatedAt) return false;
+  const t = new Date(r.updatedAt).getTime();
+  return !isNaN(t) && (Date.now()-t) < 10*60*1000;
+}
+function minutesAgo(iso){
+  const t = new Date(iso).getTime();
+  if(isNaN(t)) return '';
+  const mins = Math.max(0, Math.round((Date.now()-t)/60000));
+  if(mins<1) return 'just now';
+  if(mins<60) return mins+'m ago';
+  return Math.round(mins/60)+'h ago';
 }
 
 function renderTable(){
   const tbody = document.getElementById('tableBody');
   const indices = getFilteredIndices();
+  updateSortArrows();
 
   if(indices.length===0){
-    tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">${rows.length===0 ? 'No dashboards yet — click "+ Add dashboard" to start.' : 'No dashboards match these filters.'}</td></tr>`;
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="13">${rows.length===0 ? 'No dashboards yet — click "+ Add dashboard" to start.' : 'No dashboards match these filters.'}</td></tr>`;
   }else{
-    tbody.innerHTML = indices.map(i => { const r = rows[i]; return `
-    <tr class="main-row" data-idx="${i}" onclick="rowClicked(event,${i})" ondragover="onRowDragOver(event)" ondragleave="onRowDragLeave(event)" ondrop="onRowDrop(event,${i})">
+    tbody.innerHTML = indices.map(i => { const r = rows[i];
+      const recent = isRecentlyUpdated(r);
+      return `
+    <tr class="main-row${recent?' row-recent':''}" data-idx="${i}" onclick="rowClicked(event,${i})" ondragover="onRowDragOver(event)" ondragleave="onRowDragLeave(event)" ondrop="onRowDrop(event,${i})">
+      <td class="checkbox-cell" onclick="event.stopPropagation()"><input type="checkbox" ${selectedIdx.has(i)?'checked':''} onchange="toggleRowSelect(${i},this.checked)"></td>
       <td class="row-actions"><button class="view-btn" onclick="event.stopPropagation();openModal(${i})" title="View details">⤢</button></td>
       <td class="row-actions"><button class="del-btn" onclick="event.stopPropagation();deleteRow(${i})" title="Remove row">✕</button></td>
       <td class="col-name" contenteditable="true" data-placeholder="Dashboard name" onclick="event.stopPropagation()">
         <div class="name-text">${escapeHtml(r.name)}</div>
+        ${r.updatedAt?`<div class="updated-meta">${recent?'<span class="recent-dot"></span> ':''}Updated ${minutesAgo(r.updatedAt)}${r.updatedBy?' by '+escapeHtml(r.updatedBy):''}</div>`:''}
       </td>
+      <td style="text-align:center;" title="${escapeHtml(r.owner||'Unassigned')}"><span class="owner-badge ${r.owner?'':'unassigned'}">${initialsFor(r.owner)}</span></td>
       ${selectCell(i,'platform',PLATFORM_OPTS,r.platform,platClass)}
       ${selectCell(i,'accessMethod',ACCESS_OPTS,r.accessMethod,accClass)}
       <td class="stake-cell">
@@ -587,12 +744,32 @@ function renderTable(){
     td.addEventListener('input', ()=>{
       const tr = td.closest('tr'); const idx = parseInt(tr.dataset.idx);
       rows[idx].name = td.querySelector('.name-text').innerText;
+      touchRow(idx);
       scheduleSave(ROWS_KEY, ()=>rows);
     });
   });
 
   const countEl = document.getElementById('filterCount');
   if(countEl) countEl.textContent = hasActiveFilters() ? `Showing ${indices.length} of ${rows.length}` : `${rows.length} dashboard${rows.length===1?'':'s'}`;
+  renderSummary();
+  renderMatrix();
+  updateBulkBar();
+}
+
+function renderSummary(){
+  const el = document.getElementById('summaryStrip');
+  if(!el) return;
+  const total = rows.length;
+  const byStatus = {}; STATUS_OPTS.forEach(s=>byStatus[s.v]=0);
+  rows.forEach(r=>{ if(byStatus[r.status]!==undefined) byStatus[r.status]++; });
+  const tableauCount = rows.filter(r=>r.platform==='Tableau').length;
+  const highCount = rows.filter(r=>r.priority==='High').length;
+  el.innerHTML = `
+    <div class="summary-chip"><b>${total}</b> dashboard${total===1?'':'s'}</div>
+    <div class="summary-chip"><b>${highCount}</b> High priority</div>
+    ${STATUS_OPTS.map(s=>`<div class="summary-chip"><b>${byStatus[s.v]||0}</b> ${s.label}</div>`).join('')}
+    <div class="summary-chip"><b>${tableauCount}</b> on Tableau</div>
+  `;
 }
 
 function populateFilterOptions(){
@@ -614,6 +791,10 @@ function populateFilterOptions(){
   const names = [hier.mdName, ...hier.cxos.map(c=>c.name), ...hier.departments.map(d=>d.name)];
   const cur = filters.stakeholder;
   stakeSel.innerHTML = '<option value="">All stakeholders</option>' + names.map(n=>`<option value="${escapeHtml(n)}" ${n===cur?'selected':''}>${escapeHtml(n)}</option>`).join('');
+
+  const bp = document.getElementById('bulkPriority'), bs = document.getElementById('bulkStatus');
+  if(bp && bp.options.length<=1) bp.innerHTML = '<option value="">Set priority…</option>' + PRIORITY_OPTS.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(bs && bs.options.length<=1) bs.innerHTML = '<option value="">Set status…</option>' + STATUS_OPTS.map(s=>`<option value="${s.v}">${s.label}</option>`).join('');
 }
 
 function clearFilters(){
@@ -632,6 +813,80 @@ function initFilterBar(){
   document.getElementById('filterStakeholder').addEventListener('change', e=>{ filters.stakeholder = e.target.value; renderTable(); });
 }
 
+/* ---------- Bulk edit ---------- */
+function toggleRowSelect(idx, checked){
+  if(checked) selectedIdx.add(idx); else selectedIdx.delete(idx);
+  updateBulkBar();
+}
+function updateBulkBar(){
+  const bar = document.getElementById('bulkBar');
+  const countEl = document.getElementById('bulkCount');
+  if(!bar) return;
+  if(selectedIdx.size>0){ bar.classList.add('show'); countEl.textContent = selectedIdx.size + ' selected'; }
+  else{ bar.classList.remove('show'); }
+}
+function clearSelection(){ selectedIdx.clear(); renderTable(); }
+function applyBulkEdit(){
+  const pri = document.getElementById('bulkPriority').value;
+  const stat = document.getElementById('bulkStatus').value;
+  if(!pri && !stat){ alert('Pick a priority or status to apply first.'); return; }
+  selectedIdx.forEach(idx=>{
+    if(!rows[idx]) return;
+    if(pri) rows[idx].priority = pri;
+    if(stat) rows[idx].status = stat;
+    touchRow(idx);
+  });
+  document.getElementById('bulkPriority').value = '';
+  document.getElementById('bulkStatus').value = '';
+  selectedIdx.clear();
+  renderTable();
+  scheduleSave(ROWS_KEY, ()=>rows);
+}
+function bulkDelete(){
+  if(!confirm(`Delete ${selectedIdx.size} selected dashboard(s)? This cannot be undone.`)) return;
+  rows = rows.filter((r,i)=>!selectedIdx.has(i));
+  selectedIdx.clear();
+  renderTable();
+  scheduleSave(ROWS_KEY, ()=>rows);
+}
+
+/* ---------- Last-updated tracking ---------- */
+function touchRow(idx){
+  if(!rows[idx]) return;
+  rows[idx].updatedAt = new Date().toISOString();
+  rows[idx].updatedBy = currentUserName || 'Someone';
+}
+
+/* ---------- "Your name" & presenter mode ---------- */
+function initUserNameField(){
+  const input = document.getElementById('userNameInput');
+  if(!input) return;
+  input.addEventListener('input', e=>{ currentUserName = e.target.value; });
+}
+function initPresenterToggle(){
+  const btn = document.getElementById('presenterToggleBtn');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{}); // handled by togglePresenterMode via inline onclick
+}
+function togglePresenterMode(){
+  const on = document.body.classList.toggle('presenter-mode');
+  const btn = document.getElementById('presenterToggleBtn');
+  btn.classList.toggle('active', on);
+  btn.textContent = on ? 'Exit presenter mode' : 'Presenter mode';
+}
+
+/* ---------- Duplicate a dashboard row ---------- */
+function duplicateRow(idx){
+  const copy = JSON.parse(JSON.stringify(rows[idx]));
+  copy.id = generateRowId();
+  copy.name = (copy.name || 'Dashboard') + ' (copy)';
+  copy.updatedAt = new Date().toISOString();
+  copy.updatedBy = currentUserName || 'Someone';
+  rows.splice(idx+1, 0, copy);
+  renderTable();
+  scheduleSave(ROWS_KEY, ()=>rows);
+}
+
 // Drag-to-resize table columns. Widths live only in this browser tab for
 // this session (not saved to the Sheet) — reload resets them to default.
 function initColumnResize(){
@@ -640,7 +895,7 @@ function initColumnResize(){
   const cols = table.querySelectorAll('colgroup col');
   const ths = table.querySelectorAll('thead th');
   ths.forEach((th, i) => {
-    if(i < 2 || i >= cols.length - 1) return; // skip icon columns and the last column
+    if(i < 3 || i >= cols.length - 1) return; // skip checkbox/view/delete columns and the last column
     th.classList.add('resizable-th');
     const handle = document.createElement('div');
     handle.className = 'col-resize-handle';
@@ -671,7 +926,7 @@ function rowClicked(e, idx){
   if(t.closest('select') || t.closest('input') || t.closest('button') || t.closest('[contenteditable="true"]') || t.closest('.stake-popover')) return;
   openModal(idx);
 }
-function onSelectChange(idx, field, el){ rows[idx][field] = el.value; renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+function onSelectChange(idx, field, el){ rows[idx][field] = el.value; touchRow(idx); renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
 
 function addRow(){
   rows.push({name:'New dashboard',source:'',platform:'Tableau',accessMethod:'Emailed Export',type:'Live Dashboard',stakeholders:[],trigger:'Manual',priority:'Medium',status:'To Be Started',objective:'',details:'',owner:'',link:'',requiredFields:[],linkedMetrics:[],visualLink:'',visualNote:'',visualImage:''});
@@ -692,10 +947,11 @@ function onRowDrop(e, idx){
   if(!id) return;
   if(!rows[idx].linkedMetrics) rows[idx].linkedMetrics = [];
   if(!rows[idx].linkedMetrics.includes(id)) rows[idx].linkedMetrics.push(id);
+  touchRow(idx);
   renderTable();
   scheduleSave(ROWS_KEY, ()=>rows);
 }
-function unlinkMetric(idx, id){ rows[idx].linkedMetrics = (rows[idx].linkedMetrics||[]).filter(x=>x!==id); renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
+function unlinkMetric(idx, id){ rows[idx].linkedMetrics = (rows[idx].linkedMetrics||[]).filter(x=>x!==id); touchRow(idx); renderTable(); scheduleSave(ROWS_KEY, ()=>rows); }
 
 function exportCSV(){
   const headers = ['Dashboard Name','Source','Platform','Access Method','Type','Stakeholders','Trigger','Priority','Status','Objective','Details','Action Owner','Link','Required Fields','Linked Metrics','Visual Link','Visual Note'];
@@ -746,7 +1002,8 @@ function renderModalContent(){
 
   document.getElementById('modalBox').innerHTML = `
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="m-eyebrow">${escapeHtml(r.platform)} · ${escapeHtml(r.accessMethod)}</div>
+    <button class="dup-btn" onclick="duplicateRow(${idx});closeModal();" title="Duplicate this dashboard" style="position:absolute;top:18px;right:60px;background:var(--paper);border:none;padding:0 12px;height:32px;border-radius:16px;font-size:11.5px;font-weight:700;color:var(--med);cursor:pointer;">⎘ Duplicate</button>
+    <div class="m-eyebrow">${escapeHtml(r.platform)} · ${escapeHtml(r.accessMethod)}${r.updatedAt?` · Updated ${minutesAgo(r.updatedAt)}${r.updatedBy?' by '+escapeHtml(r.updatedBy):''}`:''}</div>
     <div class="m-title" contenteditable="true" oninput="updateModalField('name',this.innerText)">${escapeHtml(r.name)}</div>
     <div class="m-badges">
       <select class="badge ${platClass(r.platform)}" onchange="updateModalField('platform',this.value);refreshModalBadges()">${platOpts}</select>
@@ -755,12 +1012,14 @@ function renderModalContent(){
       <select class="badge ${priClass(r.priority)}" onchange="updateModalField('priority',this.value);refreshModalBadges()">${priOpts}</select>
       <select class="badge ${statusClass(r.status)}" onchange="updateModalField('status',this.value);refreshModalBadges()">${statusOpts}</select>
     </div>
+    ${r.accessMethod!=='Full Tableau License' ? renderAccessRequestButton(r) : ''}
 
     <div class="m-grid">
       <div class="m-field"><div class="k">Source</div><input type="text" value="${escapeHtml(r.source)}" oninput="updateModalField('source',this.value)"></div>
       <div class="m-field"><div class="k">Type</div><select onchange="updateModalField('type',this.value)">${typeOpts}</select></div>
       <div class="m-field"><div class="k">Action Owner</div><input type="text" value="${escapeHtml(r.owner)}" oninput="updateModalField('owner',this.value)"></div>
-      <div class="m-field"><div class="k">Link</div><input type="text" value="${escapeHtml(r.link)}" placeholder="paste link" oninput="updateModalField('link',this.value)"></div>
+      <div class="m-field"><div class="k">ETA</div><input type="date" value="${escapeHtml(r.eta||'')}" oninput="updateModalField('eta',this.value)"></div>
+      <div class="m-field full"><div class="k">Link</div><input type="text" value="${escapeHtml(r.link)}" placeholder="paste link" oninput="updateModalField('link',this.value)"></div>
       <div class="m-field full"><div class="k">Objective</div><textarea oninput="updateModalField('objective',this.value)">${escapeHtml(r.objective)}</textarea></div>
       <div class="m-field full"><div class="k">Details</div><textarea oninput="updateModalField('details',this.value)">${escapeHtml(r.details)}</textarea></div>
     </div>
@@ -803,9 +1062,88 @@ function renderModalContent(){
       <div id="modalVisualPreview">${r.visualImage?`<div class="visual-preview"><img src="${r.visualImage}"><button onclick="removeModalVisualImage()">Remove local preview</button></div>`:''}</div>
       <textarea class="visual-note" placeholder="Or just describe the layout in words..." oninput="updateModalField('visualNote',this.value)">${escapeHtml(r.visualNote)}</textarea>
     </div>
+
+    <div class="m-section">
+      <h5>Comments</h5>
+      <div class="hint">Notes and questions from anyone reviewing this dashboard.</div>
+      <div id="modalComments">${commentsHtml(r.id)}</div>
+      <div class="comment-add-row">
+        <input type="text" id="modalCommentInput" placeholder="Add a comment..." onkeydown="if(event.key==='Enter'){postComment(${idx});event.preventDefault();}">
+        <button onclick="postComment(${idx})">Post</button>
+      </div>
+    </div>
   `;
 }
-function updateModalField(field, value){ rows[currentModalIdx][field] = value; scheduleSave(ROWS_KEY, ()=>rows); }
+function updateModalField(field, value){ rows[currentModalIdx][field] = value; touchRow(currentModalIdx); scheduleSave(ROWS_KEY, ()=>rows); }
+
+/* ---------- Comments ---------- */
+function commentsHtml(rowId){
+  const list = (allComments||[]).filter(c=>c.RowID===rowId).sort((a,b)=> new Date(a.Timestamp) - new Date(b.Timestamp));
+  if(!list.length) return '<div class="hint">No comments yet.</div>';
+  return list.map(c=>`
+    <div class="comment-item">
+      <div class="c-head"><span class="c-author">${escapeHtml(c.Author||'Someone')}</span><span>${minutesAgo(c.Timestamp)}</span></div>
+      <div class="c-text">${escapeHtml(c.Text)}</div>
+    </div>`).join('');
+}
+function postComment(idx){
+  const input = document.getElementById('modalCommentInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const r = rows[idx];
+  const author = currentUserName.trim() || 'Anonymous';
+  const commentId = generateGenericId('cm');
+  // Optimistic: show it immediately, then send it to the Sheet.
+  allComments.push({ ID:commentId, RowID:r.id, Author:author, Text:text, Timestamp:new Date().toISOString() });
+  input.value = '';
+  if(currentModalIdx===idx) document.getElementById('modalComments').innerHTML = commentsHtml(r.id);
+  queueFormSubmit({ action:'addComment', commentId, rowId:r.id, author, text });
+}
+
+/* ---------- Request Tableau access ---------- */
+function renderAccessRequestButton(r){
+  const already = (allAccessRequests||[]).some(req => req.DashboardID===r.id && req.Requester===(currentUserName||'').trim() && currentUserName.trim());
+  if(already){
+    return `<button class="request-access-btn sent" disabled>Tableau access requested ✓</button>`;
+  }
+  return `<button class="request-access-btn" onclick="requestTableauAccess('${esc1(r.id)}','${esc1(r.name)}')">Request Tableau access for this dashboard</button>`;
+}
+function requestTableauAccess(dashboardId, dashboardName){
+  let requester = currentUserName.trim();
+  if(!requester){
+    requester = prompt('Your name, so we know who to grant access to:') || '';
+    if(!requester){ return; }
+    currentUserName = requester;
+    const input = document.getElementById('userNameInput');
+    if(input) input.value = requester;
+  }
+  const requestId = generateGenericId('req');
+  allAccessRequests.push({ ID:requestId, DashboardID:dashboardId, DashboardName:dashboardName, Requester:requester, Timestamp:new Date().toISOString() });
+  queueFormSubmit({ action:'requestAccess', requestId, dashboardId, dashboardName, requester });
+  if(currentModalIdx!==null) renderModalContent();
+}
+
+/* ---------- Priority x Status matrix ---------- */
+function renderMatrix(){
+  const el = document.getElementById('matrixGrid');
+  if(!el) return;
+  let html = '<div class="matrix-corner"></div>';
+  STATUS_OPTS.forEach(s => { html += `<div class="matrix-col-head">${escapeHtml(s.label)}</div>`; });
+  PRIORITY_OPTS.forEach(p => {
+    html += `<div class="matrix-row-head ${priClass(p)}">${escapeHtml(p)}</div>`;
+    STATUS_OPTS.forEach(s => {
+      const matches = rows.filter(r => r.priority===p && r.status===s.v);
+      const chips = matches.map(r => {
+        const idx = rows.indexOf(r);
+        const label = r.name && r.name.length>20 ? r.name.slice(0,18)+'…' : (r.name||'Untitled');
+        return `<span class="matrix-chip" title="${escapeHtml(r.name)}" onclick="openModal(${idx})">${escapeHtml(label)}</span>`;
+      }).join('');
+      html += `<div class="matrix-cell">${chips || '<span class="matrix-empty">—</span>'}</div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
 function refreshModalBadges(){ renderModalContent(); }
 function toggleModalStakeholder(name, checked){
   const r = rows[currentModalIdx];
@@ -813,6 +1151,7 @@ function toggleModalStakeholder(name, checked){
   const pos = r.stakeholders.indexOf(name);
   if(checked && pos===-1) r.stakeholders.push(name);
   if(!checked && pos!==-1) r.stakeholders.splice(pos,1);
+  touchRow(currentModalIdx);
   scheduleSave(ROWS_KEY, ()=>rows);
 }
 function addModalField(){
@@ -822,12 +1161,13 @@ function addModalField(){
   const r = rows[currentModalIdx];
   if(!r.requiredFields) r.requiredFields=[];
   r.requiredFields.push(val);
+  touchRow(currentModalIdx);
   scheduleSave(ROWS_KEY, ()=>rows);
   renderModalContent();
   document.getElementById('modalFieldInput').focus();
 }
-function removeModalField(fi){ rows[currentModalIdx].requiredFields.splice(fi,1); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
-function unlinkModalMetric(id){ rows[currentModalIdx].linkedMetrics = (rows[currentModalIdx].linkedMetrics||[]).filter(x=>x!==id); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
+function removeModalField(fi){ rows[currentModalIdx].requiredFields.splice(fi,1); touchRow(currentModalIdx); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
+function unlinkModalMetric(id){ rows[currentModalIdx].linkedMetrics = (rows[currentModalIdx].linkedMetrics||[]).filter(x=>x!==id); touchRow(currentModalIdx); scheduleSave(ROWS_KEY, ()=>rows); renderModalContent(); }
 function onModalVisualUpload(input){
   const file = input.files[0];
   if(!file) return;
@@ -890,21 +1230,28 @@ function splitList(s){ return (s||'').toString().split(',').map(x=>x.trim()).fil
 
 function rowsToSheetFormat(){
   return rows.map(r => ({
-    Name:r.name, Source:r.source, Platform:r.platform, AccessMethod:r.accessMethod, Type:r.type,
+    ID:r.id, Name:r.name, Source:r.source, Platform:r.platform, AccessMethod:r.accessMethod, Type:r.type,
     Stakeholders:(r.stakeholders||[]).join(', '), Trigger:r.trigger, Priority:r.priority, Status:r.status,
-    Objective:r.objective, Details:r.details, Owner:r.owner, Link:r.link,
+    ETA:r.eta||'', Objective:r.objective, Details:r.details, Owner:r.owner, Link:r.link,
     RequiredFields:(r.requiredFields||[]).join(', '), LinkedMetrics:(r.linkedMetrics||[]).join(', '),
-    VisualLink:r.visualLink, VisualNote:r.visualNote
+    VisualLink:r.visualLink, VisualNote:r.visualNote, UpdatedAt:r.updatedAt||'', UpdatedBy:r.updatedBy||''
   }));
 }
+let lastLoadHadMissingIds = false;
 function sheetFormatToRows(arr){
-  return (arr||[]).map(d => ({
-    name:d.Name||'', source:d.Source||'', platform:d.Platform||'Tableau', accessMethod:d.AccessMethod||'Emailed Export',
-    type:d.Type||'Live Dashboard', stakeholders:splitList(d.Stakeholders), trigger:d.Trigger||'Manual',
-    priority:d.Priority||'Medium', status:d.Status||'To Be Started', objective:d.Objective||'', details:d.Details||'',
-    owner:d.Owner||'', link:d.Link||'', requiredFields:splitList(d.RequiredFields), linkedMetrics:splitList(d.LinkedMetrics),
-    visualLink:d.VisualLink||'', visualNote:d.VisualNote||'', visualImage:''
-  }));
+  lastLoadHadMissingIds = false;
+  return (arr||[]).map(d => {
+    let id = d.ID && String(d.ID).trim();
+    if(!id){ id = generateRowId(); lastLoadHadMissingIds = true; }
+    return {
+      id, name:d.Name||'', source:d.Source||'', platform:d.Platform||'Tableau', accessMethod:d.AccessMethod||'Emailed Export',
+      type:d.Type||'Live Dashboard', stakeholders:splitList(d.Stakeholders), trigger:d.Trigger||'Manual',
+      priority:d.Priority||'Medium', status:d.Status||'To Be Started', eta:d.ETA||'', objective:d.Objective||'', details:d.Details||'',
+      owner:d.Owner||'', link:d.Link||'', requiredFields:splitList(d.RequiredFields), linkedMetrics:splitList(d.LinkedMetrics),
+      visualLink:d.VisualLink||'', visualNote:d.VisualNote||'', visualImage:'',
+      updatedAt:d.UpdatedAt||'', updatedBy:d.UpdatedBy||''
+    };
+  });
 }
 function mdToSheetFormat(){ return [{Name:hier.mdName, Title:hier.mdTitle, Location:hier.mdLocation}]; }
 function cxosToSheetFormat(){ return hier.cxos.map(c=>({Name:c.name, Title:c.title, Location:c.location})); }
@@ -1004,6 +1351,8 @@ async function pullLatest(){
     };
     metrics = sheetFormatToMetrics(data.metrics);
     autoCreateMissingMetrics();
+    allComments = data.comments || [];
+    allAccessRequests = data.accessRequests || [];
     document.getElementById('notesDataBi').value = data.notes || '';
     platformNote = {
       title: (data.platformNote && data.platformNote.Title) || platformNote.title,
@@ -1011,8 +1360,12 @@ async function pullLatest(){
     };
     document.getElementById('platformNoteTitle').innerText = platformNote.title;
     document.getElementById('platformNoteBody').innerText = platformNote.body;
-    renderHier(); renderTable(); renderMetrics();
+    renderHier(); renderTable(); renderMetrics(); renderMatrix();
     setSyncedNow();
+    // Rows loaded before this update (or added directly in the Sheet) won't
+    // have an ID yet — generate and persist one now so comments/last-updated
+    // tracking has something stable to key off going forward.
+    if(lastLoadHadMissingIds) scheduleSave(ROWS_KEY, ()=>rows);
   }catch(e){
     console.error(e);
     document.getElementById('syncText').textContent = 'Could not reach the Google Sheet';
@@ -1049,8 +1402,11 @@ async function init(){
   renderHier();
   renderTable();
   renderMetrics();
+  renderMatrix();
   initFilterBar();
   initColumnResize();
+  initUserNameField();
+  initPresenterToggle();
 
   if(!urlReady()){
     document.getElementById('syncText').textContent = 'Not connected — paste your Apps Script URL';
@@ -1069,6 +1425,7 @@ async function init(){
     setInterval(()=>{ if(document.visibilityState==='visible') pullLatest(); }, POLL_MS);
   }
   setInterval(tickSyncLabel, 3000);
+  setInterval(()=>{ renderTable(); }, 60000); // refresh "updated Xm ago" labels
 }
 
 init();
